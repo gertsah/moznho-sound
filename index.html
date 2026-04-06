@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Moznho Sound</title>
+    <meta
+      name="description"
+      content="Moznho Sound — экспериментальный лендинг для лейбла с sticky-сценами, анимированными переходами и подтвержденными по публичным релизам артистами."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Syne:wght@400;500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="site-noise" aria-hidden="true"></div>
+    <div class="site-glow site-glow-left" aria-hidden="true"></div>
+    <div class="site-glow site-glow-right" aria-hidden="true"></div>
+
+    <header class="topbar">
+      <a class="topbar__brand" href="#hero">MOZNHO SOUND</a>
+      <nav class="topbar__nav" aria-label="Навигация">
+        <a href="#artists">artists</a>
+        <a href="#releases">drops</a>
+        <a href="#signal">signal</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" id="hero">
+        <div class="hero__meta reveal" data-reveal>
+          <span>Moscow label landing concept</span>
+          <span>public release snapshot / 06 april 2026</span>
+        </div>
+
+        <div class="hero__body">
+          <p class="hero__eyebrow reveal" data-reveal>
+            raw rap energy / sticky storytelling / slide transitions
+          </p>
+
+          <h1 class="hero__title" data-hero-title>
+            <span>MOZNHO</span>
+            <span>SOUND</span>
+          </h1>
+
+          <div class="hero__copy reveal" data-reveal>
+            <p>
+              Лендинг для лейбла, собранный как сцена: крупная типографика,
+              липкие секции, перелистывание карточек и анимированный ритм,
+              вдохновленный русскими креативными лейблами и независимыми
+              американскими студиями.
+            </p>
+            <p>
+              Внутри не выдуманный roster, а подтвержденные по публичным
+              релизам имена, которые удалось отследить сейчас: Double G,
+              Yarou, UH! BODY.
+            </p>
+          </div>
+
+          <div class="hero__actions reveal" data-reveal>
+            <a class="button button--solid" href="#artists">Смотреть артистов</a>
+            <a class="button button--ghost" href="#releases">Открыть дропы</a>
+          </div>
+        </div>
+
+        <div class="hero__rail" aria-hidden="true">
+          <span>label</span>
+          <span>artists</span>
+          <span>motion</span>
+          <span>drops</span>
+        </div>
+      </section>
+
+      <section class="manifest section">
+        <div class="section__intro reveal" data-reveal>
+          <span class="section__label">manifest</span>
+          <h2>
+            Сайт должен ощущаться как digital-площадка, а не как карточка с
+            логотипом и тремя ссылками.
+          </h2>
+        </div>
+
+        <div class="manifest__grid">
+          <article class="manifest-card reveal" data-reveal>
+            <span>01</span>
+            <h3>Sticky narrative</h3>
+            <p>
+              Блоки держатся в кадре, пока следом докручивается новый слой
+              смысла: сначала атмосфера, потом roster, потом релизы.
+            </p>
+          </article>
+
+          <article class="manifest-card reveal" data-reveal>
+            <span>02</span>
+            <h3>Slide pressure</h3>
+            <p>
+              Карточки заходят друг на друга как панели и афиши: не скучный
+              список, а прокрутка с ощущением давления и темпа.
+            </p>
+          </article>
+
+          <article class="manifest-card reveal" data-reveal>
+            <span>03</span>
+            <h3>Roster honesty</h3>
+            <p>
+              Подтвержденные имена отмечены честно, без выдуманных биографий.
+              Это дает уверенный вайб и сохраняет доверие к бренду.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="artists-stage" id="artists" data-stack-section>
+        <div class="artists-stage__sticky">
+          <div class="artists-stage__heading">
+            <span class="section__label">artists</span>
+            <h2>Публично подтвержденные имена в орбите Moznho Sound</h2>
+            <p>
+              Это не заявка на полный официальный roster, а аккуратный срез по
+              релизам и store credits, который можно безопасно использовать в
+              стартовой версии сайта.
+            </p>
+          </div>
+
+          <div class="artist-stack">
+            <article class="artist-card" data-card>
+              <div class="artist-card__index">01</div>
+              <div class="artist-card__content">
+                <p class="artist-card__label">Confirmed on Yandex Music + release credits</p>
+                <h3>Double G</h3>
+                <p class="artist-card__text">
+                  Имя подтверждается на Яндекс Музыке по треку
+                  <span>Belt Double G</span>, а в актуальных публичных релизах
+                  вокруг Moznho Sound он фигурирует как центральный артист на
+                  <span>GYB</span> и <span>WOW WOW</span>, а также в дуэте на
+                  <span>not for us</span>.
+                </p>
+                <div class="artist-card__chips">
+                  <span>Yandex Music</span>
+                  <span>GYB</span>
+                  <span>not for us</span>
+                  <span>WOW WOW</span>
+                </div>
+                <a
+                  class="artist-card__link"
+                  href="https://music.yandex.ru/album/33363496/track/131308956"
+                  target="_blank"
+                  rel="noreferrer"
+                  >Открыть на Яндекс Музыке</a
+                >
+              </div>
+            </article>
+
+            <article class="artist-card" data-card>
+              <div class="artist-card__index">02</div>
+              <div class="artist-card__content">
+                <p class="artist-card__label">Confirmed on solo release + feature credit</p>
+                <h3>Yarou</h3>
+                <p class="artist-card__text">
+                  Yarou появляется как featured-артист в
+                  <span>GYB (feat. YAROU &amp; UH! BODY)</span>, а также как
+                  отдельный артист на сингле <span>WONME</span>, опубликованном
+                  с кредитом <span>MOZHNO SOUND</span>.
+                </p>
+                <div class="artist-card__chips">
+                  <span>WONME</span>
+                  <span>feature credit</span>
+                  <span>solo signal</span>
+                </div>
+                <a
+                  class="artist-card__link"
+                  href="https://music.amazon.com/albums/B0G4LMWNGK"
+                  target="_blank"
+                  rel="noreferrer"
+                  >Открыть релиз WONME</a
+                >
+              </div>
+            </article>
+
+            <article class="artist-card" data-card>
+              <div class="artist-card__index">03</div>
+              <div class="artist-card__content">
+                <p class="artist-card__label">Confirmed through feature and duo release</p>
+                <h3>UH! BODY</h3>
+                <p class="artist-card__text">
+                  UH! BODY подтверждается сразу в двух точках: как участник
+                  <span>GYB</span> и как со-артист на
+                  <span>not for us</span> вместе с Double G. Для стартовой
+                  страницы этого уже достаточно, чтобы выделить имя внутри
+                  roster-секции.
+                </p>
+                <div class="artist-card__chips">
+                  <span>GYB</span>
+                  <span>not for us</span>
+                  <span>duo release</span>
+                </div>
+                <a
+                  class="artist-card__link"
+                  href="https://music.apple.com/ru/album/not-for-us-single/1864128486"
+                  target="_blank"
+                  rel="noreferrer"
+                  >Открыть релиз not for us</a
+                >
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="releases-stage" id="releases" data-reel-section>
+        <div class="releases-stage__sticky">
+          <div class="releases-stage__header">
+            <span class="section__label">drops</span>
+            <h2>Последовательность релизов, из которой уже читается ядро лейбла</h2>
+            <div class="reel-progress">
+              <span></span>
+            </div>
+          </div>
+
+          <div class="reel-track">
+            <article class="reel-panel">
+              <p class="reel-panel__date">26 Nov 2025</p>
+              <h3>GYB</h3>
+              <p class="reel-panel__meta">Double G feat. YAROU &amp; UH! BODY</p>
+              <p class="reel-panel__copy">
+                Самая явная точка пересечения имен. Публикация с кредитом
+                <span>Mozhno Sound</span> показывает связку Double G, Yarou и
+                UH! BODY как единую сцену, а не случайный feature.
+              </p>
+              <a
+                href="https://music.apple.com/kr/album/gyb-feat-yarou-uh-body-single/1858179931"
+                target="_blank"
+                rel="noreferrer"
+                >Apple Music</a
+              >
+            </article>
+
+            <article class="reel-panel">
+              <p class="reel-panel__date">28 Nov 2025</p>
+              <h3>WONME</h3>
+              <p class="reel-panel__meta">Yarou</p>
+              <p class="reel-panel__copy">
+                Отдельный релиз Yarou с кредитом <span>MOZHNO SOUND</span>
+                помогает не сводить присутствие артиста только к фитам и делает
+                страницу более объемной.
+              </p>
+              <a
+                href="https://music.amazon.com/albums/B0G4LMWNGK"
+                target="_blank"
+                rel="noreferrer"
+                >Amazon Music</a
+              >
+            </article>
+
+            <article class="reel-panel">
+              <p class="reel-panel__date">26 Dec 2025</p>
+              <h3>not for us</h3>
+              <p class="reel-panel__meta">Double G &amp; UH! BODY</p>
+              <p class="reel-panel__copy">
+                Дуэтный релиз подтверждает UH! BODY как повторяющееся имя в
+                связке с Double G, что полезно для брендинга roster-блока.
+              </p>
+              <a
+                href="https://music.apple.com/ru/album/not-for-us-single/1864128486"
+                target="_blank"
+                rel="noreferrer"
+                >Apple Music</a
+              >
+            </article>
+
+            <article class="reel-panel">
+              <p class="reel-panel__date">16 Jan 2026</p>
+              <h3>WOW WOW</h3>
+              <p class="reel-panel__meta">Double G</p>
+              <p class="reel-panel__copy">
+                Свежий сольный сигнал Double G с кредитом
+                <span>Mozhno Sound</span>. Хорошая опора для хиро-блока и CTA,
+                если сайт позже превратится в полноценный hub релизов.
+              </p>
+              <a
+                href="https://music.amazon.com/albums/B0GFPLVPPX"
+                target="_blank"
+                rel="noreferrer"
+                >Amazon Music</a
+              >
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="signal section" id="signal">
+        <div class="section__intro reveal" data-reveal>
+          <span class="section__label">signal</span>
+          <h2>Визуальный язык для следующего шага</h2>
+        </div>
+
+        <div class="signal__grid">
+          <article class="signal-card reveal" data-reveal>
+            <h3>Scene-first brand</h3>
+            <p>
+              В дизайне акцент не на “корпоративности”, а на ощущении сцены,
+              ночного движения, релизного давления и архивного следа.
+            </p>
+          </article>
+
+          <article class="signal-card reveal" data-reveal>
+            <h3>Expandable structure</h3>
+            <p>
+              Эту основу легко продолжить в новости, мерч, клипы, живые ивенты,
+              press-kit и отдельные страницы под артистов.
+            </p>
+          </article>
+
+          <article class="signal-card reveal" data-reveal>
+            <h3>Data honesty</h3>
+            <p>
+              Пока нет полной официальной базы, лендинг может жить на
+              подтвержденных релизах, а затем спокойно расширяться без
+              переделки структуры.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <div class="footer__title">
+          <span>MOZNHO</span>
+          <span>SOUND</span>
+        </div>
+        <p>
+          Сайт-концепт с акцентом на sticky motion, layered scrolling и
+          подтвержденные по публичным источникам имена на дату 06 апреля 2026.
+        </p>
+      </footer>
+    </main>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
