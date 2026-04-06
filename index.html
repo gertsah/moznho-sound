@@ -6,7 +6,7 @@
     <title>Moznho Sound</title>
     <meta
       name="description"
-      content="Moznho Sound — чёрно-белый лендинг лейбла из Новороссийска с волновым фоном, шумом и раскрытием артистов из логотипа."
+      content="Moznho Sound — чёрно-белый анимированный сайт лейбла из Новороссийска."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -19,108 +19,115 @@
   <body>
     <div class="bg-wave bg-wave--one" aria-hidden="true"></div>
     <div class="bg-wave bg-wave--two" aria-hidden="true"></div>
+    <div class="bg-grid" aria-hidden="true"></div>
     <div class="bg-noise" aria-hidden="true"></div>
 
     <header class="topline">
       <a class="topline__brand" href="#top">MOZNHO SOUND</a>
-      <div class="topline__meta">
-        <span>Новороссийск</span>
-        <span>label / roster / releases</span>
-      </div>
+      <nav class="topline__nav" aria-label="Навигация">
+        <a href="#artists">artists</a>
+        <a href="#releases">releases</a>
+      </nav>
     </header>
 
     <main>
       <section class="hero-stage" id="top" data-hero-stage>
         <div class="hero-stage__sticky">
           <div class="hero-stage__meta reveal" data-reveal>
+            <span>Новороссийск</span>
             <span>independent label</span>
-            <span>novorossiysk</span>
           </div>
 
           <div class="hero-logo" aria-label="Moznho Sound">
-            <span class="hero-logo__line" data-logo-top>MOZNHO</span>
-
+            <span class="hero-logo__line hero-logo__line--top" data-logo-top>MOZNHO</span>
             <div class="hero-logo__names" data-logo-names>
               <span>DOUBLE G</span>
               <span>YAROU</span>
               <span>UH! BODY</span>
             </div>
+            <span class="hero-logo__line hero-logo__line--bottom" data-logo-bottom>SOUND</span>
+          </div>
 
-            <span class="hero-logo__line" data-logo-bottom>SOUND</span>
+          <div class="hero-stage__orbit">
+            <span class="hero-stage__tag hero-stage__tag--left" data-hero-tag>BLACK / WHITE</span>
+            <span class="hero-stage__tag hero-stage__tag--right" data-hero-tag>LABEL / ROSTER</span>
+            <span class="hero-stage__tag hero-stage__tag--bottom" data-hero-tag>SCROLL TO OPEN</span>
           </div>
 
           <div class="hero-stage__copy reveal" data-reveal>
             <p>
-              Лейбл из Новороссийска. Без агентских манифестов, без лишних
-              объяснений. Только имя, артисты, релизы и нужное ощущение сцены.
+              Логотип стоит в центре как сцена. При скролле он раскрывается и
+              выпускает артистов наружу.
             </p>
-          </div>
-
-          <div class="hero-stage__hint reveal" data-reveal>
-            <span>scroll down</span>
           </div>
         </div>
       </section>
 
-      <section class="roster section" id="artists">
-        <div class="section-head reveal" data-reveal>
-          <span class="section-head__label">artists</span>
-          <h2>Имена, которые уже читаются как ядро Moznho Sound</h2>
-        </div>
-
-        <div class="roster-grid">
-          <article class="roster-card reveal" data-reveal>
-            <span class="roster-card__index">01</span>
-            <h3>Double G</h3>
+      <section class="roster-stage" id="artists" data-roster-stage>
+        <div class="roster-stage__sticky">
+          <div class="roster-stage__head">
+            <span class="section-label">artists</span>
+            <h2>Ключевые имена.</h2>
             <p>
-              Центральное имя в текущем срезе релизов. Через него сходятся
-              <span>GYB</span>, <span>not for us</span> и <span>WOW WOW</span>.
+              Не мелкий список ссылок, а отдельная сцена. Каждое имя выходит
+              как самостоятельный блок.
             </p>
-            <a
-              href="https://music.yandex.ru/album/33363496/track/131308956"
-              target="_blank"
-              rel="noreferrer"
-              >Yandex Music</a
-            >
-          </article>
+          </div>
 
-          <article class="roster-card reveal" data-reveal>
-            <span class="roster-card__index">02</span>
-            <h3>Yarou</h3>
-            <p>
-              Подтверждается как отдельный артист на <span>WONME</span> и как
-              часть связки в <span>GYB</span>.
-            </p>
-            <a
-              href="https://music.amazon.com/albums/B0G4LMWNGK"
-              target="_blank"
-              rel="noreferrer"
-              >WONME</a
-            >
-          </article>
+          <div class="roster-stage__stack">
+            <article class="artist-panel" data-artist-panel>
+              <span class="artist-panel__index">01</span>
+              <h3>DOUBLE G</h3>
+              <p>
+                Центральное имя в текущем срезе релизов: <span>GYB</span>,
+                <span>not for us</span>, <span>WOW WOW</span>.
+              </p>
+              <a
+                href="https://music.yandex.ru/album/33363496/track/131308956"
+                target="_blank"
+                rel="noreferrer"
+                >Yandex Music</a
+              >
+            </article>
 
-          <article class="roster-card reveal" data-reveal>
-            <span class="roster-card__index">03</span>
-            <h3>UH! BODY</h3>
-            <p>
-              Повторяющееся имя рядом с Double G: сначала <span>GYB</span>,
-              затем <span>not for us</span>.
-            </p>
-            <a
-              href="https://music.apple.com/ru/album/not-for-us-single/1864128486"
-              target="_blank"
-              rel="noreferrer"
-              >not for us</a
-            >
-          </article>
+            <article class="artist-panel" data-artist-panel>
+              <span class="artist-panel__index">02</span>
+              <h3>YAROU</h3>
+              <p>
+                Отдельный артист на <span>WONME</span> и часть общей связки в
+                <span>GYB</span>.
+              </p>
+              <a
+                href="https://music.amazon.com/albums/B0G4LMWNGK"
+                target="_blank"
+                rel="noreferrer"
+                >WONME</a
+              >
+            </article>
+
+            <article class="artist-panel" data-artist-panel>
+              <span class="artist-panel__index">03</span>
+              <h3>UH! BODY</h3>
+              <p>
+                Повторяющееся имя рядом с Double G: сначала <span>GYB</span>,
+                потом <span>not for us</span>.
+              </p>
+              <a
+                href="https://music.apple.com/ru/album/not-for-us-single/1864128486"
+                target="_blank"
+                rel="noreferrer"
+                >not for us</a
+              >
+            </article>
+          </div>
         </div>
       </section>
 
       <section class="releases-stage" id="releases" data-reel-section>
         <div class="releases-stage__sticky">
           <div class="releases-stage__head">
-            <span class="section-head__label">releases</span>
-            <h2>Релизы двигаются как слайды. Без плашек про “концепцию”.</h2>
+            <span class="section-label">releases</span>
+            <h2>Релизы двигаются отдельным потоком.</h2>
           </div>
 
           <div class="reel-track">
@@ -151,10 +158,18 @@
         </div>
       </section>
 
-      <section class="closing section">
-        <div class="closing__inner reveal" data-reveal>
-          <p>MOZNHO SOUND</p>
-          <span>Новороссийск / independent label</span>
+      <section class="ticker">
+        <div class="ticker__track">
+          <span>MOZNHO SOUND</span>
+          <span>DOUBLE G</span>
+          <span>YAROU</span>
+          <span>UH! BODY</span>
+          <span>Новороссийск</span>
+          <span>MOZNHO SOUND</span>
+          <span>DOUBLE G</span>
+          <span>YAROU</span>
+          <span>UH! BODY</span>
+          <span>Новороссийск</span>
         </div>
       </section>
     </main>
