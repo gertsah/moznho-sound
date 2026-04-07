@@ -387,9 +387,11 @@ main {
   overflow: hidden;
   will-change: transform, opacity;
   transition:
-    box-shadow 240ms ease,
-    border-color 240ms ease,
-    background 240ms ease;
+    width 560ms cubic-bezier(0.22, 1, 0.36, 1),
+    min-height 560ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 320ms ease,
+    border-color 320ms ease,
+    background 320ms ease;
 }
 
 .artist-panel.is-draggable {
@@ -535,10 +537,10 @@ a.listen-pill:hover {
   overflow: hidden;
   transform: translate3d(0, 18px, 0);
   transition:
-    max-height 320ms cubic-bezier(0.2, 1, 0.22, 1),
-    opacity 240ms ease,
-    transform 320ms cubic-bezier(0.2, 1, 0.22, 1),
-    margin-top 320ms cubic-bezier(0.2, 1, 0.22, 1);
+    max-height 460ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 320ms ease,
+    transform 460ms cubic-bezier(0.22, 1, 0.36, 1),
+    margin-top 460ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .card-detail__copy {
@@ -720,14 +722,16 @@ a.listen-pill:hover {
   gap: 18px;
   width: max-content;
   will-change: transform;
+  transition: gap 560ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .reel-track.has-expanded {
-  gap: 26px;
+  gap: 40px;
 }
 
 .reel-card {
   position: relative;
+  flex: 0 0 auto;
   width: min(25vw, 320px);
   min-width: 280px;
   min-height: 58vh;
@@ -745,11 +749,11 @@ a.listen-pill:hover {
   will-change: transform, opacity;
   cursor: pointer;
   transition:
-    width 320ms cubic-bezier(0.2, 1, 0.22, 1),
-    min-height 320ms cubic-bezier(0.2, 1, 0.22, 1),
-    box-shadow 220ms ease,
-    border-color 220ms ease,
-    background 220ms ease;
+    width 620ms cubic-bezier(0.22, 1, 0.36, 1),
+    min-height 620ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 320ms ease,
+    border-color 320ms ease,
+    background 320ms ease;
 }
 
 .reel-card:hover {
@@ -792,7 +796,7 @@ a.listen-pill:hover {
 }
 
 .reel-card.is-expanded {
-  width: min(38vw, 480px);
+  width: min(40vw, 520px);
   min-height: min(78vh, 760px);
 }
 

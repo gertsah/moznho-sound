@@ -249,7 +249,22 @@ const rosterPanelStates = artistPanelParts.map((parts, index) => ({
   dragTargetRotate: 0,
   dragX: 0,
   dragY: 0,
-  dragRotate: 0
+  dragRotate: 0,
+  layoutX: 0,
+  layoutY: 0,
+  layoutScale: 1,
+  layoutRotate: 0,
+  layoutWidth: 0,
+  layoutMinHeight: 0,
+  layoutOpacity: 1
+}));
+const reelCardStates = reelCards.map((card) => ({
+  card,
+  pushX: 0,
+  lift: 0,
+  scale: 1,
+  rotate: 0,
+  opacity: 1
 }));
 
 const setupAntigravityBackground = () => {
@@ -773,6 +788,14 @@ const updateRosterStage = () => {
         body.style.opacity = "";
         body.style.transform = "";
       }
+
+      state.layoutX = 0;
+      state.layoutY = 0;
+      state.layoutScale = 1;
+      state.layoutRotate = 0;
+      state.layoutWidth = 0;
+      state.layoutMinHeight = 0;
+      state.layoutOpacity = 1;
     });
     return false;
   }
@@ -836,16 +859,25 @@ const updateRosterStage = () => {
     const startY = finalY + 240 + index * 24;
     const startScale = 0.62;
     const startRotate = finalRotate + (index === 1 ? -14 : index === 0 ? -24 : 24);
-    const x = startX + (finalX - startX) * intro;
-    const y = startY + (finalY - startY) * intro;
-    const scale = startScale + (finalScale - startScale) * intro;
-    const rotate = startRotate + (finalRotate - startRotate) * intro;
+    const targetX = startX + (finalX - startX) * intro;
+    const targetY = startY + (finalY - startY) * intro;
+    const targetScale = startScale + (finalScale - startScale) * intro;
+    const targetRotate = startRotate + (finalRotate - startRotate) * intro;
     const prominence = layout.prominence;
     const lift = state.dragging ? 34 : Math.abs(state.dragY) * 0.06 + Math.abs(state.dragX) * 0.025;
+    const targetMinHeight = isExpanded ? Math.min(window.innerHeight * 0.78, 720) : Math.min(window.innerHeight * 0.62, 540);
+    const targetOpacity = 0.2 + intro * 0.8;
 
     state.dragX += (state.dragTargetX - state.dragX) * (state.dragging ? 0.28 : 0.12);
     state.dragY += (state.dragTargetY - state.dragY) * (state.dragging ? 0.28 : 0.12);
     state.dragRotate += (state.dragTargetRotate - state.dragRotate) * (state.dragging ? 0.24 : 0.1);
+    state.layoutX += (targetX - state.layoutX) * 0.14;
+    state.layoutY += (targetY - state.layoutY) * 0.14;
+    state.layoutScale += (targetScale - state.layoutScale) * 0.14;
+    state.layoutRotate += (targetRotate - state.layoutRotate) * 0.14;
+    state.layoutWidth += (layout.width - state.layoutWidth) * 0.16;
+    state.layoutMinHeight += (targetMinHeight - state.layoutMinHeight) * 0.16;
+    state.layoutOpacity += (targetOpacity - state.layoutOpacity) * 0.16;
 
     if (
       progress > 0.01 && progress < 0.94 ||
@@ -853,15 +885,22 @@ const updateRosterStage = () => {
       state.dragging ||
       Math.abs(state.dragX - state.dragTargetX) > 0.2 ||
       Math.abs(state.dragY - state.dragTargetY) > 0.2 ||
-      Math.abs(state.dragRotate - state.dragTargetRotate) > 0.08
+      Math.abs(state.dragRotate - state.dragTargetRotate) > 0.08 ||
+      Math.abs(state.layoutX - targetX) > 0.35 ||
+      Math.abs(state.layoutY - targetY) > 0.35 ||
+      Math.abs(state.layoutScale - targetScale) > 0.003 ||
+      Math.abs(state.layoutRotate - targetRotate) > 0.05 ||
+      Math.abs(state.layoutWidth - layout.width) > 0.5 ||
+      Math.abs(state.layoutMinHeight - targetMinHeight) > 0.6 ||
+      Math.abs(state.layoutOpacity - targetOpacity) > 0.01
     ) {
       needsAnotherFrame = true;
     }
 
-    panel.style.width = `${layout.width}px`;
-    panel.style.minHeight = isExpanded ? `${snap(Math.min(window.innerHeight * 0.78, 720))}px` : "";
-    panel.style.transform = `translate3d(${snap(x + state.dragX)}px, ${snap(y + state.dragY - lift)}px, ${state.dragging ? 84 : 0}px) scale(${scale + (state.dragging ? 0.03 : 0)}) rotate(${rotate + state.dragRotate}deg)`;
-    panel.style.opacity = String(0.2 + intro * 0.8);
+    panel.style.width = `${snap(state.layoutWidth)}px`;
+    panel.style.minHeight = `${snap(state.layoutMinHeight)}px`;
+    panel.style.transform = `translate3d(${snap(state.layoutX + state.dragX)}px, ${snap(state.layoutY + state.dragY - lift)}px, ${state.dragging ? 84 : 0}px) scale(${state.layoutScale + (state.dragging ? 0.03 : 0)}) rotate(${state.layoutRotate + state.dragRotate}deg)`;
+    panel.style.opacity = String(state.layoutOpacity);
     panel.style.zIndex = String(layout.z + (state.dragging ? 10 : 0));
     panel.classList.toggle("is-ready", intro > 0.98);
 
@@ -886,39 +925,63 @@ const updateRosterStage = () => {
 };
 
 const updateReel = () => {
-  if (!reelSection || !reelTrack || !reelCards.length || window.innerWidth <= 1080) return;
+  if (!reelSection || !reelTrack || !reelCards.length || window.innerWidth <= 1080) return false;
 
   const progress = getStageProgress(reelSection);
   const focusIndex = progress * (reelCards.length - 1);
   const expandedIndex = reelCards.findIndex((card) => card.classList.contains("is-expanded"));
+  const travel = Math.max(34, (reelCards.length - 2) * 10);
+  let needsAnotherFrame = false;
 
-  reelTrack.style.transform = `translate3d(${-progress * 34}%, 0, 0)`;
+  reelTrack.style.transform = `translate3d(${-progress * travel}%, 0, 0)`;
 
   reelCards.forEach((card, index) => {
+    const state = reelCardStates[index];
     const isExpanded = card.classList.contains("is-expanded");
     const distance = Math.abs(focusIndex - index);
     let focus = clamp(1 - distance * 0.26, 0.9, 1);
     let lift = (focus - 0.9) * 140;
     let tilt = (index - focusIndex) * 2.2;
+    let pushX = 0;
 
     if (expandedIndex !== -1) {
       const offsetFromExpanded = index - expandedIndex;
+      const distanceFromExpanded = Math.abs(offsetFromExpanded);
 
       if (isExpanded) {
-        focus = 1.04;
-        lift += 34;
-        tilt *= 0.32;
+        focus = 1.03;
+        lift += 28;
+        tilt *= 0.2;
       } else {
-        focus = Math.max(0.88, focus - 0.06);
-        lift -= 8;
-        tilt += offsetFromExpanded * 1.2;
+        focus = Math.max(0.89, focus - 0.045);
+        lift = Math.max(-12, lift - 6);
+        tilt += offsetFromExpanded * 0.8;
+        pushX = (offsetFromExpanded < 0 ? -1 : 1) * (72 + Math.max(0, 2 - distanceFromExpanded) * 22);
       }
     }
 
-    card.style.transform = `translate3d(0, ${-lift}px, 0) scale(${focus}) rotate(${tilt}deg)`;
-    card.style.opacity = String(clamp(0.56 + (focus - 0.88) * 2.8, 0.52, 1));
+    state.pushX += (pushX - state.pushX) * 0.14;
+    state.lift += (lift - state.lift) * 0.14;
+    state.scale += (focus - state.scale) * 0.14;
+    state.rotate += (tilt - state.rotate) * 0.14;
+    state.opacity += (clamp(0.56 + (focus - 0.88) * 2.8, 0.52, 1) - state.opacity) * 0.16;
+
+    if (
+      Math.abs(state.pushX - pushX) > 0.4 ||
+      Math.abs(state.lift - lift) > 0.5 ||
+      Math.abs(state.scale - focus) > 0.004 ||
+      Math.abs(state.rotate - tilt) > 0.05 ||
+      Math.abs(state.opacity - clamp(0.56 + (focus - 0.88) * 2.8, 0.52, 1)) > 0.01
+    ) {
+      needsAnotherFrame = true;
+    }
+
+    card.style.transform = `translate3d(${snap(state.pushX)}px, ${snap(-state.lift)}px, 0) scale(${state.scale}) rotate(${state.rotate}deg)`;
+    card.style.opacity = String(state.opacity);
     card.style.zIndex = String(isExpanded ? 180 : Math.round(focus * 100));
   });
+
+  return needsAnotherFrame;
 };
 
 let ticking = false;
@@ -926,10 +989,10 @@ let ticking = false;
 const updateMotion = () => {
   updateHeroStage();
   const rosterNeedsFrame = updateRosterStage();
-  updateReel();
+  const reelNeedsFrame = updateReel();
   ticking = false;
 
-  if (rosterNeedsFrame) {
+  if (rosterNeedsFrame || reelNeedsFrame) {
     requestFrame();
   }
 };
