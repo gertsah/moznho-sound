@@ -187,34 +187,39 @@ const updateRosterStage = () => {
   }
 
   const progress = getStageProgress(rosterStage);
-  const focusPoint = progress * (artistPanelParts.length - 1);
+  const wave = progress * Math.PI * 2.6;
+  const layouts = [
+    { x: 0, y: 112, rotate: -8, scale: 0.88, prominence: 0.72, phase: 0.2, z: 2 },
+    { x: 126, y: 4, rotate: -2, scale: 1, prominence: 1, phase: 1.6, z: 4 },
+    { x: 256, y: 122, rotate: 7, scale: 0.86, prominence: 0.78, phase: 2.9, z: 3 }
+  ];
 
   artistPanelParts.forEach(({ panel, indexLabel, cover, body }, index) => {
-    const signedDistance = index - focusPoint;
-    const distance = Math.abs(signedDistance);
-    const local = clamp(1 - distance, 0, 1);
-    const translateX = snap(signedDistance * 208);
-    const translateY = snap(10 + distance * 104);
-    const scale = 0.76 + local * 0.24;
-    const rotate = signedDistance * 7.5;
-    const bodyLocal = clamp((local - 0.58) / 0.42, 0, 1);
+    const layout = layouts[index] ?? layouts[layouts.length - 1];
+    const driftX = Math.cos(wave + layout.phase) * 18;
+    const driftY = Math.sin(wave * 1.12 + layout.phase) * 26;
+    const scale = layout.scale + Math.sin(wave * 0.82 + layout.phase) * 0.03;
+    const rotate = layout.rotate + Math.sin(wave + layout.phase) * 2.2;
+    const coverLift = Math.sin(wave * 1.3 + layout.phase) * 8;
+    const bodyLift = Math.cos(wave * 1.1 + layout.phase) * 10;
+    const prominence = layout.prominence;
 
-    panel.style.transform = `translate3d(${translateX}px, ${translateY}px, 0) scale(${scale}) rotate(${rotate}deg)`;
-    panel.style.opacity = String(0.14 + local * 0.86);
-    panel.style.zIndex = String(Math.round(local * 100) + (artistPanelParts.length - index));
+    panel.style.transform = `translate3d(${snap(layout.x + driftX)}px, ${snap(layout.y + driftY)}px, 0) scale(${scale}) rotate(${rotate}deg)`;
+    panel.style.opacity = "1";
+    panel.style.zIndex = String(layout.z);
 
     if (indexLabel) {
-      indexLabel.style.opacity = String(0.08 + local * 0.92);
+      indexLabel.style.opacity = String(0.34 + prominence * 0.66);
     }
 
     if (cover) {
-      cover.style.opacity = String(0.26 + local * 0.74);
-      cover.style.transform = `translate3d(0, ${snap((1 - local) * 18)}px, 0) scale(${0.84 + local * 0.16})`;
+      cover.style.opacity = String(0.64 + prominence * 0.36);
+      cover.style.transform = `translate3d(0, ${snap(coverLift)}px, 0) scale(${0.92 + prominence * 0.08})`;
     }
 
     if (body) {
-      body.style.opacity = String(bodyLocal);
-      body.style.transform = `translate3d(0, ${snap((1 - bodyLocal) * 30)}px, 0)`;
+      body.style.opacity = String(0.42 + prominence * 0.58);
+      body.style.transform = `translate3d(0, ${snap(bodyLift)}px, 0)`;
     }
   });
 };
