@@ -253,6 +253,7 @@ const setupRosterInteractions = () => {
   if (!rosterPanelStates.length) return () => {};
 
   const canInteract = () => window.innerWidth > 1080 && finePointerQuery.matches;
+  let activeState = null;
 
   const releaseState = (state) => {
     state.dragging = false;
@@ -269,40 +270,15 @@ const setupRosterInteractions = () => {
       if (!canInteract()) return;
       if (event.button !== 0) return;
 
+      event.preventDefault();
+      activeState = state;
       state.dragging = true;
       state.dragPointerId = event.pointerId;
       state.suppressClick = false;
       state.dragStartX = event.clientX - state.dragTargetX;
       state.dragStartY = event.clientY - state.dragTargetY;
       state.panel.classList.add("is-dragging");
-      state.panel.setPointerCapture(event.pointerId);
       requestFrame();
-    };
-
-    const handlePointerMove = (event) => {
-      if (!state.dragging || state.dragPointerId !== event.pointerId) return;
-
-      const nextX = clamp(event.clientX - state.dragStartX, -220, 220);
-      const nextY = clamp(event.clientY - state.dragStartY, -180, 180);
-
-      if (Math.abs(nextX) > 6 || Math.abs(nextY) > 6) {
-        state.suppressClick = true;
-      }
-
-      state.dragTargetX = nextX;
-      state.dragTargetY = nextY;
-      state.dragTargetRotate = clamp(nextX * 0.06, -10, 10);
-      requestFrame();
-    };
-
-    const handlePointerUp = (event) => {
-      if (state.dragPointerId !== event.pointerId) return;
-      releaseState(state);
-    };
-
-    const handlePointerCancel = (event) => {
-      if (state.dragPointerId !== event.pointerId) return;
-      releaseState(state);
     };
 
     const handleClickCapture = (event) => {
@@ -314,36 +290,65 @@ const setupRosterInteractions = () => {
 
     state.panel.classList.add("is-draggable");
     state.panel.addEventListener("pointerdown", handlePointerDown);
-    state.panel.addEventListener("pointermove", handlePointerMove);
-    state.panel.addEventListener("pointerup", handlePointerUp);
-    state.panel.addEventListener("pointercancel", handlePointerCancel);
-    state.panel.addEventListener("lostpointercapture", handlePointerCancel);
     state.panel.addEventListener("click", handleClickCapture, true);
 
     return () => {
       state.panel.classList.remove("is-draggable", "is-dragging");
       state.panel.removeEventListener("pointerdown", handlePointerDown);
-      state.panel.removeEventListener("pointermove", handlePointerMove);
-      state.panel.removeEventListener("pointerup", handlePointerUp);
-      state.panel.removeEventListener("pointercancel", handlePointerCancel);
-      state.panel.removeEventListener("lostpointercapture", handlePointerCancel);
       state.panel.removeEventListener("click", handleClickCapture, true);
     };
   });
 
+  const handlePointerMove = (event) => {
+    if (!activeState || !activeState.dragging) return;
+
+    const nextX = clamp(event.clientX - activeState.dragStartX, -260, 260);
+    const nextY = clamp(event.clientY - activeState.dragStartY, -220, 220);
+
+    if (Math.abs(nextX) > 6 || Math.abs(nextY) > 6) {
+      activeState.suppressClick = true;
+    }
+
+    activeState.dragTargetX = nextX;
+    activeState.dragTargetY = nextY;
+    activeState.dragTargetRotate = clamp(nextX * 0.08, -14, 14);
+    requestFrame();
+  };
+
+  const handlePointerUp = (event) => {
+    if (!activeState || activeState.dragPointerId !== event.pointerId) return;
+    const state = activeState;
+    activeState = null;
+    releaseState(state);
+  };
+
+  const handlePointerCancel = (event) => {
+    if (!activeState || activeState.dragPointerId !== event.pointerId) return;
+    const state = activeState;
+    activeState = null;
+    releaseState(state);
+  };
+
   const handleResizeLike = () => {
-    if (canInteract()) return;
+    if (canInteract() && !activeState) return;
+    activeState = null;
     rosterPanelStates.forEach((state) => releaseState(state));
   };
 
   window.addEventListener("blur", handleResizeLike);
   window.addEventListener("resize", handleResizeLike);
+  window.addEventListener("pointermove", handlePointerMove);
+  window.addEventListener("pointerup", handlePointerUp);
+  window.addEventListener("pointercancel", handlePointerCancel);
   finePointerQuery.addEventListener("change", handleResizeLike);
 
   return () => {
     cleanupFns.forEach((cleanup) => cleanup());
     window.removeEventListener("blur", handleResizeLike);
     window.removeEventListener("resize", handleResizeLike);
+    window.removeEventListener("pointermove", handlePointerMove);
+    window.removeEventListener("pointerup", handlePointerUp);
+    window.removeEventListener("pointercancel", handlePointerCancel);
     finePointerQuery.removeEventListener("change", handleResizeLike);
   };
 };
@@ -435,22 +440,22 @@ const updateRosterStage = () => {
   rosterPanelStates.forEach((state, index) => {
     const { panel, indexLabel, cover, body } = state;
     const layout = layouts[index] ?? layouts[layouts.length - 1];
-    const introStart = 0.08 + index * 0.08;
-    const introEnd = introStart + 0.26;
+    const introStart = 0.04 + index * 0.1;
+    const introEnd = introStart + 0.32;
     const intro = reducedMotionQuery.matches
       ? 1
       : easeOutCubic(clamp((progress - introStart) / (introEnd - introStart), 0, 1));
-    const floatX = Math.cos(time * 1.1 + layout.phase) * 8;
-    const floatY = Math.sin(time * 1.24 + layout.phase) * 12;
-    const floatRotate = Math.sin(time * 0.9 + layout.phase) * 1.4;
+    const floatX = Math.cos(time * 1.22 + layout.phase) * 11;
+    const floatY = Math.sin(time * 1.35 + layout.phase) * 15;
+    const floatRotate = Math.sin(time * 0.96 + layout.phase) * 1.8;
     const finalX = layout.x + floatX;
     const finalY = layout.y + floatY;
     const finalScale = layout.scale + Math.sin(time * 0.84 + layout.phase) * 0.012;
     const finalRotate = layout.rotate + floatRotate;
-    const startX = finalX + (index === 1 ? 0 : index === 0 ? -180 : 180);
-    const startY = finalY + 180 + index * 16;
-    const startScale = 0.78;
-    const startRotate = finalRotate + (index === 1 ? -8 : index === 0 ? -16 : 16);
+    const startX = finalX + (index === 1 ? 0 : index === 0 ? -260 : 260);
+    const startY = finalY + 240 + index * 24;
+    const startScale = 0.62;
+    const startRotate = finalRotate + (index === 1 ? -14 : index === 0 ? -24 : 24);
     const x = startX + (finalX - startX) * intro;
     const y = startY + (finalY - startY) * intro;
     const scale = startScale + (finalScale - startScale) * intro;
@@ -463,6 +468,8 @@ const updateRosterStage = () => {
     state.dragRotate += (state.dragTargetRotate - state.dragRotate) * (state.dragging ? 0.24 : 0.1);
 
     if (
+      progress > 0.01 && progress < 0.94 ||
+      intro < 0.999 ||
       state.dragging ||
       Math.abs(state.dragX - state.dragTargetX) > 0.2 ||
       Math.abs(state.dragY - state.dragTargetY) > 0.2 ||
