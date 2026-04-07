@@ -1,4 +1,16 @@
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+const snap = (value) => Math.round(value);
+
+const getStageProgress = (element) => {
+  const rect = element.getBoundingClientRect();
+  const distance = rect.height - window.innerHeight;
+
+  if (distance <= 0) {
+    return rect.top <= 0 ? 1 : 0;
+  }
+
+  return clamp(-rect.top / distance, 0, 1);
+};
 
 const revealElements = document.querySelectorAll("[data-reveal]");
 const heroStage = document.querySelector("[data-hero-stage]");
@@ -31,29 +43,27 @@ revealElements.forEach((element) => revealObserver.observe(element));
 const updateHeroStage = () => {
   if (!heroStage || !logoTop || !logoBottom) return;
 
-  const rect = heroStage.getBoundingClientRect();
-  const viewport = window.innerHeight;
-  const progress = clamp((viewport - rect.top) / (rect.height - viewport), 0, 1);
-  const split = clamp((progress - 0.08) / 0.42, 0, 1);
-  const widen = clamp((progress - 0.16) / 0.5, 0, 1);
+  const progress = getStageProgress(heroStage);
+  const split = clamp((progress - 0.16) / 0.32, 0, 1);
+  const namesProgress = clamp((progress - 0.38) / 0.18, 0, 1);
 
-  logoTop.style.transform = `translate3d(calc(-50% - ${split * 120}px), ${-split * 180}px, 0)`;
-  logoBottom.style.transform = `translate3d(calc(-50% + ${split * 120}px), ${split * 180}px, 0)`;
-  logoTop.style.letterSpacing = `${0.02 + widen * 0.08}em`;
-  logoBottom.style.letterSpacing = `${0.02 + widen * 0.08}em`;
+  logoTop.style.transform = `translate3d(0, ${snap(-split * 164)}px, 0)`;
+  logoBottom.style.transform = `translate3d(0, ${snap(split * 164)}px, 0)`;
+  logoTop.style.letterSpacing = "0.02em";
+  logoBottom.style.letterSpacing = "0.02em";
 
   nameItems.forEach((item, index) => {
-    const local = clamp((progress - 0.2 - index * 0.07) / 0.22, 0, 1);
+    const local = clamp((namesProgress - index * 0.18) / 0.46, 0, 1);
     item.style.opacity = String(local);
-    item.style.transform = `translate3d(0, ${(1 - local) * 34}px, 0) scale(${0.94 + local * 0.06})`;
-    item.style.letterSpacing = `${0.08 + local * 0.08}em`;
+    item.style.transform = `translate3d(0, ${snap((1 - local) * 26)}px, 0) scale(${0.96 + local * 0.04})`;
+    item.style.letterSpacing = "0.08em";
   });
 
   heroTags.forEach((tag, index) => {
     const direction = index === 0 ? -1 : index === 1 ? 1 : 0;
-    const local = clamp((progress - 0.1) / 0.45, 0, 1);
-    const x = direction * local * 90;
-    const y = index === 2 ? local * 24 : -local * 18;
+    const local = clamp((progress - 0.24) / 0.36, 0, 1);
+    const x = snap(direction * local * 78);
+    const y = snap(index === 2 ? local * 20 : -local * 14);
     tag.style.transform =
       index === 2
         ? `translate3d(calc(-50% + ${x}px), ${y}px, 0)`
@@ -65,9 +75,7 @@ const updateHeroStage = () => {
 const updateRosterStage = () => {
   if (!rosterStage || !artistPanels.length || window.innerWidth <= 1080) return;
 
-  const rect = rosterStage.getBoundingClientRect();
-  const viewport = window.innerHeight;
-  const progress = clamp((viewport - rect.top) / (rect.height - viewport), 0, 1);
+  const progress = getStageProgress(rosterStage);
 
   artistPanels.forEach((panel, index) => {
     const local = clamp(progress * 1.36 - index * 0.24, 0, 1);
@@ -83,9 +91,7 @@ const updateRosterStage = () => {
 const updateReel = () => {
   if (!reelSection || !reelTrack || !reelCards.length || window.innerWidth <= 1080) return;
 
-  const rect = reelSection.getBoundingClientRect();
-  const viewport = window.innerHeight;
-  const progress = clamp((viewport - rect.top) / (rect.height - viewport), 0, 1);
+  const progress = getStageProgress(reelSection);
 
   reelTrack.style.transform = `translate3d(${-progress * 56}%, 0, 0)`;
 
@@ -114,5 +120,11 @@ const requestFrame = () => {
 
 window.addEventListener("scroll", requestFrame, { passive: true });
 window.addEventListener("resize", requestFrame);
+window.addEventListener("pageshow", () => {
+  if (!location.hash || location.hash === "#top") {
+    window.scrollTo(0, 0);
+    requestFrame();
+  }
+});
 
 updateMotion();

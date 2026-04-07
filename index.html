@@ -14,7 +14,16 @@
       href="https://fonts.googleapis.com/css2?family=Anton&family=Manrope:wght@400;500;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./styles.css?v=20260407-2" />
+    <script>
+      if ("scrollRestoration" in history) {
+        history.scrollRestoration = "manual";
+      }
+
+      if (!location.hash || location.hash === "#top") {
+        window.scrollTo(0, 0);
+      }
+    </script>
   </head>
   <body>
     <div class="bg-wave bg-wave--one" aria-hidden="true"></div>
@@ -174,6 +183,6 @@
       </section>
     </main>
 
-    <script src="./script.js"></script>
+    <script src="./script.js?v=20260407-2"></script>
   </body>
 </html>
