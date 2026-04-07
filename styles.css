@@ -80,7 +80,7 @@ a {
   inset: -8%;
   z-index: 1;
   opacity: 0.88;
-  filter: blur(24px) contrast(14);
+  filter: blur(18px) contrast(16);
   transform: translate3d(0, 0, 0);
 }
 
@@ -90,16 +90,16 @@ a {
   left: 0;
   width: var(--size, 180px);
   height: var(--size, 180px);
-  border-radius: 50%;
+  border-radius: 46% 54% 62% 38% / 42% 38% 62% 58%;
   background:
     radial-gradient(
-      circle at 36% 34%,
+      circle at 34% 32%,
       var(--blob-core) 0%,
-      var(--blob-mid) 38%,
-      rgba(10, 10, 12, 0.7) 68%,
+      var(--blob-mid) 42%,
+      rgba(10, 10, 12, 0.74) 70%,
       var(--blob-edge) 100%
     );
-  opacity: 0.9;
+  opacity: 0.92;
   mix-blend-mode: multiply;
   will-change: transform;
 }

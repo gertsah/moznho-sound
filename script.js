@@ -40,13 +40,13 @@ const setupLavaLamp = () => {
   if (!lavaLayer) return () => {};
 
   const configs = [
-    { anchorX: 0.06, anchorY: 0.2, size: 0.3, rangeX: 0.02, rangeY: 0.05, phase: 0.3, speedX: 0.12, speedY: 0.09, scaleRange: 0.05 },
-    { anchorX: 0.28, anchorY: 0.1, size: 0.24, rangeX: 0.018, rangeY: 0.04, phase: 1.1, speedX: 0.1, speedY: 0.08, scaleRange: 0.04 },
-    { anchorX: 0.78, anchorY: 0.14, size: 0.28, rangeX: 0.022, rangeY: 0.05, phase: 2.2, speedX: 0.11, speedY: 0.09, scaleRange: 0.05 },
-    { anchorX: 0.18, anchorY: 0.56, size: 0.22, rangeX: 0.024, rangeY: 0.06, phase: 3.1, speedX: 0.14, speedY: 0.1, scaleRange: 0.06 },
-    { anchorX: 0.52, anchorY: 0.48, size: 0.18, rangeX: 0.02, rangeY: 0.045, phase: 4.0, speedX: 0.13, speedY: 0.1, scaleRange: 0.05 },
-    { anchorX: 0.86, anchorY: 0.6, size: 0.24, rangeX: 0.022, rangeY: 0.06, phase: 5.0, speedX: 0.12, speedY: 0.09, scaleRange: 0.06 },
-    { anchorX: 0.62, anchorY: 0.88, size: 0.22, rangeX: 0.02, rangeY: 0.05, phase: 5.7, speedX: 0.11, speedY: 0.08, scaleRange: 0.05 }
+    { anchorX: 0.05, anchorY: 0.18, size: 0.3, rangeX: 0.045, rangeY: 0.08, phase: 0.3, speedX: 0.34, speedY: 0.28, scaleRange: 0.08, stretchRange: 0.12, rotateRange: 10 },
+    { anchorX: 0.22, anchorY: 0.08, size: 0.24, rangeX: 0.038, rangeY: 0.065, phase: 1.1, speedX: 0.46, speedY: 0.33, scaleRange: 0.07, stretchRange: 0.1, rotateRange: 12 },
+    { anchorX: 0.74, anchorY: 0.1, size: 0.28, rangeX: 0.044, rangeY: 0.078, phase: 2.2, speedX: 0.36, speedY: 0.3, scaleRange: 0.08, stretchRange: 0.12, rotateRange: 9 },
+    { anchorX: 0.12, anchorY: 0.46, size: 0.22, rangeX: 0.05, rangeY: 0.09, phase: 3.1, speedX: 0.42, speedY: 0.35, scaleRange: 0.09, stretchRange: 0.14, rotateRange: 14 },
+    { anchorX: 0.48, anchorY: 0.38, size: 0.18, rangeX: 0.036, rangeY: 0.06, phase: 4.0, speedX: 0.51, speedY: 0.41, scaleRange: 0.08, stretchRange: 0.13, rotateRange: 16 },
+    { anchorX: 0.84, anchorY: 0.56, size: 0.24, rangeX: 0.042, rangeY: 0.084, phase: 5.0, speedX: 0.38, speedY: 0.3, scaleRange: 0.09, stretchRange: 0.12, rotateRange: 11 },
+    { anchorX: 0.58, anchorY: 0.84, size: 0.22, rangeX: 0.04, rangeY: 0.075, phase: 5.7, speedX: 0.4, speedY: 0.32, scaleRange: 0.08, stretchRange: 0.11, rotateRange: 13 }
   ];
 
   lavaLayer.replaceChildren();
@@ -61,7 +61,7 @@ const setupLavaLamp = () => {
   let frameId = 0;
 
   const renderLava = (time = 0) => {
-    const t = time * 0.00034;
+    const t = time * 0.0011;
     const width = window.innerWidth;
     const height = window.innerHeight;
     const minSide = Math.min(width, height);
@@ -75,12 +75,16 @@ const setupLavaLamp = () => {
         Math.cos(t * blob.speedY + blob.phase) * height * blob.rangeY +
         Math.sin(t * blob.speedX * 0.7 + blob.phase * 1.2) * height * blob.rangeY * 0.34;
       const scale = 0.96 + Math.sin(t * (blob.speedX + blob.speedY) + blob.phase) * blob.scaleRange;
+      const stretch = Math.cos(t * (blob.speedX * 0.92 + blob.speedY * 0.76) + blob.phase * 1.3) * blob.stretchRange;
+      const scaleX = scale + stretch;
+      const scaleY = scale - stretch * 0.72;
+      const rotation = Math.sin(t * (blob.speedX * 0.6 + blob.speedY * 0.5) + blob.phase) * blob.rotateRange;
       const x = width * blob.anchorX + driftX;
       const y = height * blob.anchorY + driftY;
 
       blob.node.style.width = `${size}px`;
       blob.node.style.height = `${size}px`;
-      blob.node.style.transform = `translate3d(${x - size / 2}px, ${y - size / 2}px, 0) scale(${scale})`;
+      blob.node.style.transform = `translate3d(${x - size / 2}px, ${y - size / 2}px, 0) rotate(${rotation}deg) scale(${scaleX}, ${scaleY})`;
     });
   };
 
