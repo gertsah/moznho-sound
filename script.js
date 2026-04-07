@@ -33,111 +33,199 @@ const artistPanelParts = artistPanels.map((panel) => ({
 const reelSection = document.querySelector("[data-reel-section]");
 const reelTrack = reelSection?.querySelector(".reel-track");
 const reelCards = reelSection ? [...reelSection.querySelectorAll(".reel-card")] : [];
-const lavaLayer = document.querySelector("[data-lava-layer]");
+const backgroundCanvas = document.querySelector("[data-bg-canvas]");
 const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 
-const setupLavaLamp = () => {
-  if (!lavaLayer) return () => {};
+const setupAntigravityBackground = () => {
+  if (!(backgroundCanvas instanceof HTMLCanvasElement)) return () => {};
+
+  const context = backgroundCanvas.getContext("2d");
+  if (!context) return () => {};
 
   const TAU = Math.PI * 2;
+  const config = {
+    density: 200,
+    particlesScale: 0.75,
+    ringWidth: 0.15,
+    ringWidth2: 0.05,
+    ringDisplacement: 0.15
+  };
+  const palette = ["#ffcf03", "#ff9d1f", "#f84242", "#8a56d8", "#2c64ed"];
   const emitters = [
-    { centerX: 0.54, centerY: 0.3, rings: 6, radiusStart: 0.08, radiusStep: 0.06, dotsStart: 8, dotsStep: 4, driftX: 0.018, driftY: 0.014, spin: 0.075, phase: 0.2 },
-    { centerX: 0.3, centerY: 0.78, rings: 6, radiusStart: 0.08, radiusStep: 0.065, dotsStart: 8, dotsStep: 4, driftX: 0.02, driftY: 0.016, spin: -0.07, phase: 1.1 },
-    { centerX: 0.78, centerY: 0.74, rings: 6, radiusStart: 0.08, radiusStep: 0.065, dotsStart: 8, dotsStep: 4, driftX: 0.018, driftY: 0.015, spin: 0.08, phase: 2.4 },
-    { centerX: 0.82, centerY: 0.22, rings: 5, radiusStart: 0.08, radiusStep: 0.06, dotsStart: 7, dotsStep: 4, driftX: 0.014, driftY: 0.012, spin: -0.06, phase: 3.3 }
+    { x: 0.56, y: 0.42, radiusStart: 0.025, radiusStep: 0.037, rings: 12, countStart: 8, countStep: 6, driftX: 0.012, driftY: 0.01, spin: 0.085, pointerX: 0.018, pointerY: 0.018, phase: 0.2, intensity: 1 },
+    { x: 0.79, y: 0.26, radiusStart: 0.022, radiusStep: 0.035, rings: 10, countStart: 8, countStep: 5, driftX: 0.009, driftY: 0.008, spin: -0.078, pointerX: 0.014, pointerY: 0.015, phase: 1.2, intensity: 0.88 },
+    { x: 0.35, y: 0.78, radiusStart: 0.024, radiusStep: 0.038, rings: 11, countStart: 8, countStep: 6, driftX: 0.011, driftY: 0.009, spin: 0.072, pointerX: 0.015, pointerY: 0.016, phase: 2.1, intensity: 0.94 },
+    { x: 0.84, y: 0.82, radiusStart: 0.02, radiusStep: 0.036, rings: 9, countStart: 7, countStep: 5, driftX: 0.008, driftY: 0.008, spin: -0.068, pointerX: 0.012, pointerY: 0.014, phase: 3.1, intensity: 0.8 }
   ];
-
-  const configs = emitters.flatMap((emitter, emitterIndex) =>
+  const particles = emitters.flatMap((emitter, emitterIndex) =>
     Array.from({ length: emitter.rings }, (_, ringIndex) => {
+      const ringRatio = ringIndex / Math.max(emitter.rings - 1, 1);
       const radius = emitter.radiusStart + ringIndex * emitter.radiusStep;
-      const count = emitter.dotsStart + ringIndex * emitter.dotsStep;
+      const count = emitter.countStart + ringIndex * emitter.countStep;
 
-      return Array.from({ length: count }, (_, dotIndex) => {
-        const ringRatio = ringIndex / Math.max(emitter.rings - 1, 1);
-        const offset = (dotIndex / count) * TAU;
-
-        return {
-          centerX: emitter.centerX,
-          centerY: emitter.centerY,
-          radius,
-          baseAngle: offset + emitterIndex * 0.22 + ringIndex * 0.08,
-          size: 0.0034 + ringRatio * 0.0034 + (dotIndex % 3) * 0.00025,
-          opacity: 0.34 + ringRatio * 0.28,
-          driftX: emitter.driftX,
-          driftY: emitter.driftY,
-          spin: emitter.spin * (0.55 + ringRatio * 0.45),
-          pulse: 0.015 + ringRatio * 0.012,
-          phase: emitter.phase + dotIndex * 0.18 + ringIndex * 0.32
-        };
-      });
+      return Array.from({ length: count }, (_, particleIndex) => ({
+        emitter,
+        emitterIndex,
+        ringRatio,
+        radius,
+        baseAngle: (particleIndex / count) * TAU + ringIndex * 0.045 + emitterIndex * 0.32,
+        colorOffset: ((particleIndex / count) + ringIndex * 0.065 + emitterIndex * 0.18) % 1,
+        length: (2.8 + ringRatio * 6.5 + (particleIndex % 4) * 0.35) * config.particlesScale,
+        thickness: 0.9 + ringRatio * 1.55,
+        alpha: (0.16 + ringRatio * 0.54) * emitter.intensity,
+        phase: emitter.phase + particleIndex * 0.11 + ringIndex * 0.28
+      }));
     }).flat()
   );
-
-  lavaLayer.replaceChildren();
-
-  const blobs = configs.map((config) => {
-    const node = document.createElement("span");
-    node.className = "bg-shader__blob";
-    lavaLayer.append(node);
-    return { ...config, node };
-  });
-
+  const specks = Array.from({ length: 240 }, () => ({
+    x: Math.random(),
+    y: Math.random(),
+    size: 0.45 + Math.random() * 0.85,
+    alpha: 0.035 + Math.random() * 0.09
+  }));
+  const pointerTarget = { x: 0, y: 0 };
+  const pointer = { x: 0, y: 0 };
+  let width = 0;
+  let height = 0;
+  let minSide = 0;
+  let dpr = 1;
   let frameId = 0;
 
-  const renderLava = (time = 0) => {
-    const t = time * 0.00022;
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-    const minSide = Math.min(width, height);
+  const mixColor = (a, b, ratio) => {
+    const from = Number.parseInt(a.slice(1), 16);
+    const to = Number.parseInt(b.slice(1), 16);
+    const red = Math.round(((from >> 16) & 255) + (((to >> 16) & 255) - ((from >> 16) & 255)) * ratio);
+    const green = Math.round(((from >> 8) & 255) + (((to >> 8) & 255) - ((from >> 8) & 255)) * ratio);
+    const blue = Math.round((from & 255) + ((to & 255) - (from & 255)) * ratio);
+    return `rgb(${red} ${green} ${blue})`;
+  };
 
-    blobs.forEach((blob) => {
-      const size = minSide * blob.size;
-      const centerX = width * blob.centerX + Math.sin(t * 1.7 + blob.phase) * width * blob.driftX;
-      const centerY = height * blob.centerY + Math.cos(t * 1.4 + blob.phase * 0.9) * height * blob.driftY;
-      const angle = blob.baseAngle + t * blob.spin;
-      const radius = minSide * blob.radius * (1 + Math.sin(t * 2.1 + blob.phase) * blob.pulse);
-      const scale = 0.92 + Math.cos(t * 2.4 + blob.phase) * 0.08;
-      const x = centerX + Math.cos(angle) * radius;
-      const y = centerY + Math.sin(angle) * radius;
+  const samplePalette = (value) => {
+    const wrapped = ((value % 1) + 1) % 1;
+    const scaled = wrapped * palette.length;
+    const index = Math.floor(scaled) % palette.length;
+    const nextIndex = (index + 1) % palette.length;
+    return mixColor(palette[index], palette[nextIndex], scaled - index);
+  };
 
-      blob.node.style.width = `${size}px`;
-      blob.node.style.height = `${size}px`;
-      blob.node.style.opacity = String(blob.opacity);
-      blob.node.style.transform = `translate3d(${x - size / 2}px, ${y - size / 2}px, 0) scale(${scale})`;
+  const setCanvasSize = () => {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    width = window.innerWidth;
+    height = window.innerHeight;
+    minSide = Math.min(width, height);
+    backgroundCanvas.width = Math.round(width * dpr);
+    backgroundCanvas.height = Math.round(height * dpr);
+    backgroundCanvas.style.width = `${width}px`;
+    backgroundCanvas.style.height = `${height}px`;
+    context.setTransform(dpr, 0, 0, dpr, 0, 0);
+  };
+
+  const drawDash = (x, y, length, thickness, angle, color, alpha) => {
+    const radius = thickness / 2;
+    context.save();
+    context.translate(x, y);
+    context.rotate(angle);
+    context.globalAlpha = alpha;
+    context.fillStyle = color;
+    context.beginPath();
+    context.roundRect(-length / 2, -thickness / 2, length, thickness, radius);
+    context.fill();
+    context.restore();
+  };
+
+  const drawSpecks = () => {
+    specks.forEach((speck) => {
+      context.globalAlpha = speck.alpha;
+      context.fillStyle = "#111115";
+      context.fillRect(speck.x * width, speck.y * height, speck.size, speck.size);
     });
   };
 
-  const animateLava = (time) => {
-    renderLava(time);
+  const render = (time = 0) => {
+    const t = time * 0.00024;
+    pointer.x += (pointerTarget.x - pointer.x) * 0.05;
+    pointer.y += (pointerTarget.y - pointer.y) * 0.05;
+
+    context.clearRect(0, 0, width, height);
+    drawSpecks();
+
+    particles.forEach((particle) => {
+      const { emitter } = particle;
+      const driftX =
+        Math.sin(t * 0.55 + particle.phase) * emitter.driftX +
+        Math.cos(t * 0.23 + particle.phase * 0.6) * config.ringDisplacement * 0.012 +
+        pointer.x * emitter.pointerX;
+      const driftY =
+        Math.cos(t * 0.48 + particle.phase * 0.9) * emitter.driftY +
+        Math.sin(t * 0.2 + particle.phase * 0.7) * config.ringDisplacement * 0.009 +
+        pointer.y * emitter.pointerY;
+      const centerX = (emitter.x + driftX) * width;
+      const centerY = (emitter.y + driftY) * height;
+      const angle = particle.baseAngle + t * emitter.spin;
+      const radius =
+        minSide *
+        particle.radius *
+        (1 + Math.sin(t * 1.2 + particle.phase) * config.ringWidth2 * 0.8);
+      const x = centerX + Math.cos(angle) * radius;
+      const y = centerY + Math.sin(angle) * radius;
+      const tangentAngle = angle + Math.PI / 2;
+      const length = particle.length + Math.sin(t * 1.15 + particle.phase) * config.ringWidth * 2.8;
+      const thickness = particle.thickness + Math.cos(t * 1.1 + particle.phase) * config.ringWidth2 * 0.8;
+      const alpha = particle.alpha * (0.9 + Math.sin(t * 0.95 + particle.phase) * 0.1);
+      const color = samplePalette(particle.colorOffset + t * 0.015);
+
+      drawDash(x, y, length, thickness, tangentAngle, color, alpha);
+    });
+
+    context.globalAlpha = 1;
+  };
+
+  const animate = (time) => {
+    render(time);
     if (!reducedMotionQuery.matches) {
-      frameId = window.requestAnimationFrame(animateLava);
+      frameId = window.requestAnimationFrame(animate);
     }
   };
 
-  const restartLava = () => {
+  const restart = () => {
     window.cancelAnimationFrame(frameId);
-    renderLava(0);
+    setCanvasSize();
+    render(0);
     if (!reducedMotionQuery.matches) {
-      frameId = window.requestAnimationFrame(animateLava);
+      frameId = window.requestAnimationFrame(animate);
     }
+  };
+
+  const handlePointerMove = (event) => {
+    pointerTarget.x = event.clientX / window.innerWidth - 0.5;
+    pointerTarget.y = event.clientY / window.innerHeight - 0.5;
+  };
+
+  const handlePointerLeave = () => {
+    pointerTarget.x = 0;
+    pointerTarget.y = 0;
   };
 
   const handleMotionChange = () => {
-    restartLava();
+    restart();
   };
 
-  restartLava();
-  window.addEventListener("resize", restartLava);
+  restart();
+  window.addEventListener("resize", restart);
+  window.addEventListener("pointermove", handlePointerMove);
+  window.addEventListener("pointerleave", handlePointerLeave);
   reducedMotionQuery.addEventListener("change", handleMotionChange);
 
   return () => {
     window.cancelAnimationFrame(frameId);
-    window.removeEventListener("resize", restartLava);
+    window.removeEventListener("resize", restart);
+    window.removeEventListener("pointermove", handlePointerMove);
+    window.removeEventListener("pointerleave", handlePointerLeave);
     reducedMotionQuery.removeEventListener("change", handleMotionChange);
   };
 };
 
-const cleanupLavaLamp = setupLavaLamp();
+const cleanupBackground = setupAntigravityBackground();
 
 const revealObserver = new IntersectionObserver(
   (entries) => {
