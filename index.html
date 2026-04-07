@@ -14,7 +14,19 @@
       href="https://fonts.googleapis.com/css2?family=Anton&family=Manrope:wght@400;500;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="./styles.css?v=20260407-5" />
+    <link rel="stylesheet" href="./styles.css?v=20260407-6" />
+    <script type="importmap">
+      {
+        "imports": {
+          "react": "https://esm.sh/react@18.3.1",
+          "react/jsx-runtime": "https://esm.sh/react@18.3.1/jsx-runtime",
+          "react-dom": "https://esm.sh/react-dom@18.3.1",
+          "react-dom/client": "https://esm.sh/react-dom@18.3.1/client",
+          "@react-three/fiber": "https://esm.sh/@react-three/fiber@8.18.0?external=react,react-dom,three",
+          "three": "https://esm.sh/three@0.160.1"
+        }
+      }
+    </script>
     <script>
       if ("scrollRestoration" in history) {
         history.scrollRestoration = "manual";
@@ -26,13 +38,7 @@
     </script>
   </head>
   <body>
-    <div class="bg-shader" aria-hidden="true">
-      <canvas class="bg-shader__canvas" data-shader-canvas></canvas>
-    </div>
-    <div class="bg-wave bg-wave--one" aria-hidden="true"></div>
-    <div class="bg-wave bg-wave--two" aria-hidden="true"></div>
-    <div class="bg-grid" aria-hidden="true"></div>
-    <div class="bg-noise" aria-hidden="true"></div>
+    <div class="bg-shader" aria-hidden="true" data-shader-root></div>
 
     <header class="topline">
       <a class="topline__brand" href="#top">MOZNHO SOUND</a>
@@ -76,8 +82,7 @@
             <span class="section-label">artists</span>
             <h2>Ключевые имена.</h2>
             <p>
-              Не мелкий список ссылок, а отдельная сцена. Карточки артистов собираются в плотный стек и сразу
-              показывают обложки как часть roster.
+              Карточки артистов собираются в плотный стек и сразу показывают связанные релизы с живыми обложками.
             </p>
           </div>
 
@@ -96,10 +101,10 @@
                   <span>WOW WOW</span>.
                 </p>
                 <a
-                  href="https://music.yandex.ru/album/33363496/track/131308956"
+                  href="https://music.apple.com/gb/artist/double-g/1604653397"
                   target="_blank"
                   rel="noreferrer"
-                  >Yandex Music</a
+                  >Apple Music</a
                 >
               </div>
             </article>
@@ -113,14 +118,12 @@
               </div>
               <div class="artist-panel__body">
                 <h3>YAROU</h3>
-                <p>
-                  Отдельный артист на <span>WONME</span> и часть общей связки в <span>GYB</span>.
-                </p>
+                <p>Отдельный артист на <span>WONME</span> и часть общей связки в <span>GYB</span>.</p>
                 <a
-                  href="https://music.amazon.com/albums/B0G4LMWNGK"
+                  href="https://music.apple.com/tr/song/1859245879?l=tr"
                   target="_blank"
                   rel="noreferrer"
-                  >WONME</a
+                  >Apple Music</a
                 >
               </div>
             </article>
@@ -134,14 +137,12 @@
               </div>
               <div class="artist-panel__body">
                 <h3>UH! BODY</h3>
-                <p>
-                  Повторяющееся имя рядом с Double G: сначала <span>GYB</span>, потом <span>not for us</span>.
-                </p>
+                <p>Повторяющееся имя рядом с Double G: сначала <span>GYB</span>, потом <span>not for us</span>.</p>
                 <a
                   href="https://music.apple.com/ru/album/not-for-us-single/1864128486"
                   target="_blank"
                   rel="noreferrer"
-                  >not for us</a
+                  >Apple Music</a
                 >
               </div>
             </article>
@@ -153,7 +154,7 @@
         <div class="releases-stage__sticky">
           <div class="releases-stage__head">
             <span class="section-label">releases</span>
-            <h2>Релизы двигаются отдельным потоком.</h2>
+            <h2>Релизы двигаются отдельным плотным потоком.</h2>
           </div>
 
           <div class="reel-track">
@@ -220,6 +221,7 @@
       </section>
     </main>
 
-    <script src="./script.js?v=20260407-5"></script>
+    <script type="module" src="./shader-gradient.js?v=20260407-6"></script>
+    <script src="./script.js?v=20260407-6"></script>
   </body>
 </html>
