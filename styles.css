@@ -47,9 +47,9 @@ a {
   overflow: hidden;
   pointer-events: none;
   background:
-    radial-gradient(circle at 50% 18%, rgba(255, 255, 255, 0.1), transparent 24%),
-    radial-gradient(circle at 50% 46%, rgba(255, 255, 255, 0.06), transparent 34%),
-    linear-gradient(180deg, #111116 0%, #040406 52%, #000001 100%),
+    radial-gradient(circle at 50% 18%, rgba(255, 255, 255, 0.06), transparent 22%),
+    radial-gradient(circle at 50% 44%, rgba(255, 255, 255, 0.03), transparent 38%),
+    linear-gradient(180deg, #111115 0%, #050507 52%, #000001 100%),
     #000001;
 }
 
@@ -62,129 +62,168 @@ a {
 
 .bg-shader::before {
   background:
-    radial-gradient(circle at 18% 24%, rgba(255, 255, 255, 0.08), transparent 28%),
-    radial-gradient(circle at 82% 68%, rgba(255, 255, 255, 0.07), transparent 30%);
+    radial-gradient(circle at 18% 26%, rgba(255, 255, 255, 0.05), transparent 28%),
+    radial-gradient(circle at 84% 72%, rgba(255, 255, 255, 0.04), transparent 30%);
   z-index: 1;
 }
 
 .bg-shader::after {
   background:
-    linear-gradient(90deg, rgba(0, 0, 0, 0.56), transparent 18%, transparent 82%, rgba(0, 0, 0, 0.56)),
-    radial-gradient(circle at 50% 48%, rgba(0, 0, 0, 0.08) 0%, rgba(0, 0, 0, 0.38) 54%, rgba(0, 0, 0, 0.92) 100%);
+    linear-gradient(90deg, rgba(0, 0, 0, 0.62), transparent 18%, transparent 82%, rgba(0, 0, 0, 0.62)),
+    radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0.06) 0%, rgba(0, 0, 0, 0.34) 52%, rgba(0, 0, 0, 0.94) 100%);
   z-index: 2;
 }
 
 .bg-shader__lava {
   position: absolute;
-  inset: -8%;
+  inset: -14%;
   z-index: 1;
-  opacity: 0.94;
+  opacity: 0.98;
+  filter: blur(36px) contrast(22);
   transform: translate3d(0, 0, 0);
 }
 
 .bg-shader__blob {
-  --size: clamp(260px, 36vw, 720px);
+  --size: clamp(260px, 34vw, 760px);
   position: absolute;
   width: var(--size);
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background:
-    radial-gradient(
-      circle at 32% 30%,
-      var(--blob-core) 0%,
-      var(--blob-mid) 26%,
-      rgba(255, 255, 255, 0.44) 48%,
-      var(--blob-edge) 66%,
-      transparent 78%
-    );
-  mix-blend-mode: screen;
-  opacity: 0.82;
-  filter: blur(12px);
-  box-shadow: 0 0 120px rgba(255, 255, 255, 0.22);
+  height: calc(var(--size) * 1.08);
+  border-radius: 46% 54% 52% 48% / 42% 40% 60% 58%;
+  background: radial-gradient(circle at 34% 30%, var(--blob-core) 0%, var(--blob-mid) 34%, var(--blob-edge) 78%);
+  opacity: 0.96;
   will-change: transform;
 }
 
 .bg-shader__blob--1 {
-  top: -10%;
-  left: -8%;
-  animation: lavaDriftA 34s ease-in-out infinite alternate;
+  --size: clamp(320px, 34vw, 720px);
+  top: 14%;
+  left: 8%;
+  animation: lavaFloatLeft 22s ease-in-out infinite alternate;
 }
 
 .bg-shader__blob--2 {
-  --size: clamp(220px, 30vw, 560px);
-  top: 4%;
-  right: -10%;
-  opacity: 0.74;
-  animation: lavaDriftB 28s ease-in-out infinite alternate-reverse;
+  --size: clamp(280px, 28vw, 620px);
+  top: 21%;
+  left: 18%;
+  animation: lavaBridgeLeft 18s ease-in-out infinite alternate;
 }
 
 .bg-shader__blob--3 {
-  --size: clamp(320px, 42vw, 820px);
+  --size: clamp(280px, 26vw, 600px);
   top: 20%;
-  left: 18%;
-  animation: lavaDriftC 38s ease-in-out infinite alternate;
+  right: 10%;
+  animation: lavaFloatRight 24s ease-in-out infinite alternate-reverse;
 }
 
 .bg-shader__blob--4 {
-  --size: clamp(260px, 34vw, 640px);
-  top: 34%;
-  right: 8%;
-  opacity: 0.78;
-  animation: lavaDriftA 30s ease-in-out infinite alternate-reverse;
-  animation-delay: -8s;
-}
-
-.bg-shader__blob--5 {
-  --size: clamp(300px, 40vw, 760px);
-  bottom: -8%;
-  left: -4%;
-  opacity: 0.7;
-  animation: lavaDriftB 32s ease-in-out infinite alternate;
-  animation-delay: -14s;
-}
-
-.bg-shader__blob--6 {
-  --size: clamp(240px, 32vw, 620px);
-  right: 10%;
-  bottom: -12%;
-  opacity: 0.76;
-  animation: lavaDriftC 26s ease-in-out infinite alternate-reverse;
+  --size: clamp(220px, 22vw, 480px);
+  top: 31%;
+  right: 4%;
+  animation: lavaBridgeRight 17s ease-in-out infinite alternate-reverse;
   animation-delay: -5s;
 }
 
-@keyframes lavaDriftA {
+.bg-shader__blob--5 {
+  --size: clamp(220px, 20vw, 420px);
+  left: -8%;
+  bottom: -8%;
+  animation: lavaCornerLeft 26s ease-in-out infinite alternate;
+  animation-delay: -9s;
+}
+
+.bg-shader__blob--6 {
+  --size: clamp(260px, 24vw, 520px);
+  right: -4%;
+  bottom: -14%;
+  animation: lavaCornerRight 28s ease-in-out infinite alternate-reverse;
+  animation-delay: -12s;
+}
+
+.bg-shader__blob--7 {
+  --size: clamp(140px, 14vw, 260px);
+  top: -3%;
+  left: 58%;
+  animation: lavaBubbleTop 15s ease-in-out infinite alternate;
+}
+
+.bg-shader__blob--8 {
+  --size: clamp(160px, 16vw, 300px);
+  top: 58%;
+  left: 36%;
+  opacity: 0.88;
+  animation: lavaBubbleMid 19s ease-in-out infinite alternate-reverse;
+  animation-delay: -7s;
+}
+
+@keyframes lavaFloatLeft {
   0% {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-  50% {
-    transform: translate3d(64px, -54px, 0) scale(1.12);
+    transform: translate3d(-2%, -1%, 0) scale(1.06, 0.98);
   }
   100% {
-    transform: translate3d(28px, 114px, 0) scale(0.94);
+    transform: translate3d(7%, 10%, 0) scale(0.98, 1.1);
   }
 }
 
-@keyframes lavaDriftB {
+@keyframes lavaBridgeLeft {
   0% {
-    transform: translate3d(0, 0, 0) scale(0.96);
-  }
-  50% {
-    transform: translate3d(-92px, 48px, 0) scale(1.14);
+    transform: translate3d(-8%, 18%, 0) scale(0.9, 1.16);
   }
   100% {
-    transform: translate3d(54px, -84px, 0) scale(1.02);
+    transform: translate3d(8%, -6%, 0) scale(1.08, 0.9);
   }
 }
 
-@keyframes lavaDriftC {
+@keyframes lavaFloatRight {
   0% {
-    transform: translate3d(0, 0, 0) scale(1.04);
-  }
-  50% {
-    transform: translate3d(112px, 36px, 0) scale(0.92);
+    transform: translate3d(2%, -2%, 0) scale(1.02, 1.08);
   }
   100% {
-    transform: translate3d(-42px, -118px, 0) scale(1.16);
+    transform: translate3d(-8%, 12%, 0) scale(0.96, 0.98);
+  }
+}
+
+@keyframes lavaBridgeRight {
+  0% {
+    transform: translate3d(8%, 10%, 0) scale(0.92, 1.18);
+  }
+  100% {
+    transform: translate3d(-8%, -8%, 0) scale(1.08, 0.9);
+  }
+}
+
+@keyframes lavaCornerLeft {
+  0% {
+    transform: translate3d(-10%, 2%, 0) scale(1.04);
+  }
+  100% {
+    transform: translate3d(12%, -12%, 0) scale(1.18, 0.94);
+  }
+}
+
+@keyframes lavaCornerRight {
+  0% {
+    transform: translate3d(8%, 12%, 0) scale(1.1);
+  }
+  100% {
+    transform: translate3d(-10%, -10%, 0) scale(0.92, 1.16);
+  }
+}
+
+@keyframes lavaBubbleTop {
+  0% {
+    transform: translate3d(0, 0, 0) scale(0.9);
+  }
+  100% {
+    transform: translate3d(16%, 12%, 0) scale(1.12);
+  }
+}
+
+@keyframes lavaBubbleMid {
+  0% {
+    transform: translate3d(-8%, 4%, 0) scale(0.86, 1.08);
+  }
+  100% {
+    transform: translate3d(8%, -14%, 0) scale(1.12, 0.88);
   }
 }
 
