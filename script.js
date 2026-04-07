@@ -39,35 +39,38 @@ const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)")
 const setupLavaLamp = () => {
   if (!lavaLayer) return () => {};
 
-  const wrap01 = (value) => ((value % 1) + 1) % 1;
-
-  const ribbons = [
-    { baseY: -0.22, spanY: 0.22, size: 0.12, speed: 0.03, swayX: 0.006, swayY: 0.008, phase: 0.2 },
-    { baseY: 0.02, spanY: 0.2, size: 0.1, speed: 0.032, swayX: 0.006, swayY: 0.007, phase: 1.0 },
-    { baseY: 0.26, spanY: 0.19, size: 0.11, speed: 0.031, swayX: 0.007, swayY: 0.008, phase: 1.8 },
-    { baseY: 0.5, spanY: 0.18, size: 0.1, speed: 0.033, swayX: 0.006, swayY: 0.007, phase: 2.6 },
-    { baseY: 0.74, spanY: 0.17, size: 0.12, speed: 0.03, swayX: 0.007, swayY: 0.008, phase: 3.4 },
-    { baseY: 0.96, spanY: 0.18, size: 0.11, speed: 0.032, swayX: 0.006, swayY: 0.007, phase: 4.2 }
+  const TAU = Math.PI * 2;
+  const emitters = [
+    { centerX: 0.54, centerY: 0.3, rings: 6, radiusStart: 0.08, radiusStep: 0.06, dotsStart: 8, dotsStep: 4, driftX: 0.018, driftY: 0.014, spin: 0.075, phase: 0.2 },
+    { centerX: 0.3, centerY: 0.78, rings: 6, radiusStart: 0.08, radiusStep: 0.065, dotsStart: 8, dotsStep: 4, driftX: 0.02, driftY: 0.016, spin: -0.07, phase: 1.1 },
+    { centerX: 0.78, centerY: 0.74, rings: 6, radiusStart: 0.08, radiusStep: 0.065, dotsStart: 8, dotsStep: 4, driftX: 0.018, driftY: 0.015, spin: 0.08, phase: 2.4 },
+    { centerX: 0.82, centerY: 0.22, rings: 5, radiusStart: 0.08, radiusStep: 0.06, dotsStart: 7, dotsStep: 4, driftX: 0.014, driftY: 0.012, spin: -0.06, phase: 3.3 }
   ];
 
-  const configs = ribbons.flatMap((ribbon, ribbonIndex) =>
-    Array.from({ length: 6 }, (_, index) => {
-      const variance = 1 + ((index % 3) - 1) * 0.08;
+  const configs = emitters.flatMap((emitter, emitterIndex) =>
+    Array.from({ length: emitter.rings }, (_, ringIndex) => {
+      const radius = emitter.radiusStart + ringIndex * emitter.radiusStep;
+      const count = emitter.dotsStart + ringIndex * emitter.dotsStep;
 
-      return {
-        startX: -0.24,
-        spanX: 1.58,
-        baseY: ribbon.baseY,
-        spanY: ribbon.spanY,
-        size: ribbon.size * variance,
-        offset: ribbonIndex * 0.08 + index / 6,
-        phase: ribbon.phase + index * 0.55,
-        speed: ribbon.speed + index * 0.0007,
-        swayX: ribbon.swayX,
-        swayY: ribbon.swayY,
-        pulseRange: 0.035 + index * 0.002
-      };
-    })
+      return Array.from({ length: count }, (_, dotIndex) => {
+        const ringRatio = ringIndex / Math.max(emitter.rings - 1, 1);
+        const offset = (dotIndex / count) * TAU;
+
+        return {
+          centerX: emitter.centerX,
+          centerY: emitter.centerY,
+          radius,
+          baseAngle: offset + emitterIndex * 0.22 + ringIndex * 0.08,
+          size: 0.0034 + ringRatio * 0.0034 + (dotIndex % 3) * 0.00025,
+          opacity: 0.34 + ringRatio * 0.28,
+          driftX: emitter.driftX,
+          driftY: emitter.driftY,
+          spin: emitter.spin * (0.55 + ringRatio * 0.45),
+          pulse: 0.015 + ringRatio * 0.012,
+          phase: emitter.phase + dotIndex * 0.18 + ringIndex * 0.32
+        };
+      });
+    }).flat()
   );
 
   lavaLayer.replaceChildren();
@@ -82,23 +85,24 @@ const setupLavaLamp = () => {
   let frameId = 0;
 
   const renderLava = (time = 0) => {
-    const t = time * 0.001;
+    const t = time * 0.00022;
     const width = window.innerWidth;
     const height = window.innerHeight;
     const minSide = Math.min(width, height);
 
     blobs.forEach((blob) => {
       const size = minSide * blob.size;
-      const flow = wrap01(t * blob.speed + blob.offset);
-      const sway = Math.sin(t * (blob.speed * 8.8) + blob.phase);
-      const bob = Math.cos(t * (blob.speed * 7.4) + blob.phase * 1.1);
-      const pulse = Math.sin(t * (blob.speed * 9.2) + blob.phase * 0.9) * blob.pulseRange;
-      const x = width * (blob.startX + flow * blob.spanX) + sway * width * blob.swayX;
-      const y = height * (blob.baseY + flow * blob.spanY) + bob * height * blob.swayY;
-      const scale = 0.98 + pulse;
+      const centerX = width * blob.centerX + Math.sin(t * 1.7 + blob.phase) * width * blob.driftX;
+      const centerY = height * blob.centerY + Math.cos(t * 1.4 + blob.phase * 0.9) * height * blob.driftY;
+      const angle = blob.baseAngle + t * blob.spin;
+      const radius = minSide * blob.radius * (1 + Math.sin(t * 2.1 + blob.phase) * blob.pulse);
+      const scale = 0.92 + Math.cos(t * 2.4 + blob.phase) * 0.08;
+      const x = centerX + Math.cos(angle) * radius;
+      const y = centerY + Math.sin(angle) * radius;
 
       blob.node.style.width = `${size}px`;
       blob.node.style.height = `${size}px`;
+      blob.node.style.opacity = String(blob.opacity);
       blob.node.style.transform = `translate3d(${x - size / 2}px, ${y - size / 2}px, 0) scale(${scale})`;
     });
   };
