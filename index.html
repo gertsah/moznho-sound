@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Moznho Sound</title>
+    <title>MOZHNO Sound</title>
     <meta
       name="description"
-      content="Moznho Sound — черно-белый анимированный сайт лейбла из Новороссийска."
+      content="MOZHNO Sound — черно-белый анимированный сайт лейбла из Новороссийска."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -32,7 +32,7 @@
     <div class="cursor-orb" data-cursor-orb aria-hidden="true"></div>
 
     <header class="topline">
-      <a class="topline__brand" href="#top">MOZNHO SOUND</a>
+      <a class="topline__brand" href="#top">MOZHNO SOUND</a>
       <nav class="topline__nav" aria-label="Навигация">
         <a href="#artists">artists</a>
         <a href="#releases">releases</a>
@@ -47,8 +47,8 @@
             <span>independent label</span>
           </div>
 
-          <div class="hero-logo" aria-label="Moznho Sound">
-            <span class="hero-logo__line hero-logo__line--top" data-logo-top>MOZNHO</span>
+          <div class="hero-logo" aria-label="MOZHNO Sound">
+            <span class="hero-logo__line hero-logo__line--top" data-logo-top>MOZHNO</span>
             <div class="hero-logo__names" data-logo-names>
               <span>DOUBLE G</span>
               <span>YAROU</span>
@@ -75,10 +75,10 @@
           </div>
 
           <div class="roster-stage__stack">
-            <article class="artist-panel artist-panel--double-g" data-artist-panel>
+            <article class="artist-panel artist-panel--double-g" data-artist-panel data-detail-id="artist-double-g">
               <span class="artist-panel__index">01</span>
               <div class="artist-panel__cover cover-art cover-art--double-g">
-                <span class="cover-art__eyebrow">moznho sound</span>
+                <span class="cover-art__eyebrow">mozhno sound</span>
                 <strong>DOUBLE G</strong>
                 <small>GYB / WOW WOW</small>
               </div>
@@ -88,16 +88,11 @@
                   Центральное имя в текущем срезе релизов: <span>GYB</span>, <span>not for us</span>,
                   <span>WOW WOW</span>.
                 </p>
-                <a
-                  href="https://music.apple.com/gb/artist/double-g/1604653397"
-                  target="_blank"
-                  rel="noreferrer"
-                  >Apple Music</a
-                >
+                <div class="listen-pills" data-listen-pills></div>
               </div>
             </article>
 
-            <article class="artist-panel artist-panel--yarou" data-artist-panel>
+            <article class="artist-panel artist-panel--yarou" data-artist-panel data-detail-id="artist-yarou">
               <span class="artist-panel__index">02</span>
               <div class="artist-panel__cover cover-art cover-art--yarou">
                 <span class="cover-art__eyebrow">single</span>
@@ -107,16 +102,11 @@
               <div class="artist-panel__body">
                 <h3>YAROU</h3>
                 <p>Отдельный артист на <span>WONME</span> и часть общей связки в <span>GYB</span>.</p>
-                <a
-                  href="https://music.apple.com/tr/song/1859245879?l=tr"
-                  target="_blank"
-                  rel="noreferrer"
-                  >Apple Music</a
-                >
+                <div class="listen-pills" data-listen-pills></div>
               </div>
             </article>
 
-            <article class="artist-panel artist-panel--uh-body" data-artist-panel>
+            <article class="artist-panel artist-panel--uh-body" data-artist-panel data-detail-id="artist-uh-body">
               <span class="artist-panel__index">03</span>
               <div class="artist-panel__cover cover-art cover-art--uh-body">
                 <span class="cover-art__eyebrow">roster</span>
@@ -126,12 +116,7 @@
               <div class="artist-panel__body">
                 <h3>UH! BODY</h3>
                 <p>Повторяющееся имя рядом с Double G: сначала <span>GYB</span>, потом <span>not for us</span>.</p>
-                <a
-                  href="https://music.apple.com/ru/album/not-for-us-single/1864128486"
-                  target="_blank"
-                  rel="noreferrer"
-                  >Apple Music</a
-                >
+                <div class="listen-pills" data-listen-pills></div>
               </div>
             </article>
           </div>
@@ -146,7 +131,7 @@
           </div>
 
           <div class="reel-track">
-            <article class="reel-card reel-card--gyb">
+            <article class="reel-card reel-card--gyb" data-detail-id="release-gyb">
               <div class="reel-card__cover cover-art cover-art--gyb">
                 <span class="cover-art__eyebrow">26 nov 2025</span>
                 <strong>GYB</strong>
@@ -155,9 +140,10 @@
               <span class="reel-card__date">26 nov 2025</span>
               <h3>GYB</h3>
               <p>Double G feat. YAROU &amp; UH! BODY</p>
+              <div class="listen-pills" data-listen-pills></div>
             </article>
 
-            <article class="reel-card reel-card--wonme">
+            <article class="reel-card reel-card--wonme" data-detail-id="release-wonme">
               <div class="reel-card__cover cover-art cover-art--wonme">
                 <span class="cover-art__eyebrow">28 nov 2025</span>
                 <strong>WONME</strong>
@@ -166,9 +152,10 @@
               <span class="reel-card__date">28 nov 2025</span>
               <h3>WONME</h3>
               <p>Yarou</p>
+              <div class="listen-pills" data-listen-pills></div>
             </article>
 
-            <article class="reel-card reel-card--not-for-us">
+            <article class="reel-card reel-card--not-for-us" data-detail-id="release-not-for-us">
               <div class="reel-card__cover cover-art cover-art--not-for-us">
                 <span class="cover-art__eyebrow">26 dec 2025</span>
                 <strong>NOT FOR US</strong>
@@ -177,9 +164,10 @@
               <span class="reel-card__date">26 dec 2025</span>
               <h3>not for us</h3>
               <p>Double G &amp; UH! BODY</p>
+              <div class="listen-pills" data-listen-pills></div>
             </article>
 
-            <article class="reel-card reel-card--wow-wow">
+            <article class="reel-card reel-card--wow-wow" data-detail-id="release-wow-wow">
               <div class="reel-card__cover cover-art cover-art--wow-wow">
                 <span class="cover-art__eyebrow">16 jan 2026</span>
                 <strong>WOW WOW</strong>
@@ -188,6 +176,7 @@
               <span class="reel-card__date">16 jan 2026</span>
               <h3>WOW WOW</h3>
               <p>Double G</p>
+              <div class="listen-pills" data-listen-pills></div>
             </article>
           </div>
         </div>
@@ -195,12 +184,12 @@
 
       <section class="ticker">
         <div class="ticker__track">
-          <span>MOZNHO SOUND</span>
+          <span>MOZHNO SOUND</span>
           <span>DOUBLE G</span>
           <span>YAROU</span>
           <span>UH! BODY</span>
           <span>Новороссийск</span>
-          <span>MOZNHO SOUND</span>
+          <span>MOZHNO SOUND</span>
           <span>DOUBLE G</span>
           <span>YAROU</span>
           <span>UH! BODY</span>
@@ -208,6 +197,25 @@
         </div>
       </section>
     </main>
-    <script src="./script.js?v=20260407-18"></script>
+    <dialog class="detail-modal" data-detail-modal>
+      <div class="detail-modal__surface">
+        <button class="detail-modal__close" type="button" data-detail-close aria-label="Close">close</button>
+        <div class="detail-modal__content">
+          <div class="detail-modal__cover cover-art" data-detail-cover>
+            <span class="cover-art__eyebrow" data-detail-eyebrow></span>
+            <strong data-detail-strong></strong>
+            <small data-detail-small></small>
+          </div>
+          <div class="detail-modal__body">
+            <span class="detail-modal__type" data-detail-type></span>
+            <h2 data-detail-title></h2>
+            <p data-detail-description></p>
+            <div class="detail-modal__meta" data-detail-meta></div>
+            <div class="detail-modal__links" data-detail-links></div>
+          </div>
+        </div>
+      </div>
+    </dialog>
+    <script src="./script.js?v=20260407-19"></script>
   </body>
 </html>

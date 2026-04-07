@@ -35,9 +35,125 @@ const reelTrack = reelSection?.querySelector(".reel-track");
 const reelCards = reelSection ? [...reelSection.querySelectorAll(".reel-card")] : [];
 const backgroundCanvas = document.querySelector("[data-bg-canvas]");
 const cursorOrb = document.querySelector("[data-cursor-orb]");
+const detailCards = [...document.querySelectorAll("[data-detail-id]")];
+const detailModal = document.querySelector("[data-detail-modal]");
+const detailModalSurface = detailModal?.querySelector(".detail-modal__surface");
+const detailCover = detailModal?.querySelector("[data-detail-cover]");
+const detailEyebrow = detailModal?.querySelector("[data-detail-eyebrow]");
+const detailStrong = detailModal?.querySelector("[data-detail-strong]");
+const detailSmall = detailModal?.querySelector("[data-detail-small]");
+const detailType = detailModal?.querySelector("[data-detail-type]");
+const detailTitle = detailModal?.querySelector("[data-detail-title]");
+const detailDescription = detailModal?.querySelector("[data-detail-description]");
+const detailMeta = detailModal?.querySelector("[data-detail-meta]");
+const detailLinks = detailModal?.querySelector("[data-detail-links]");
+const detailClose = detailModal?.querySelector("[data-detail-close]");
 const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 const finePointerQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
 const easeOutCubic = (value) => 1 - Math.pow(1 - value, 3);
+const spotifySearch = (query) => `https://open.spotify.com/search/${encodeURIComponent(query)}`;
+const youtubeMusicSearch = (query) => `https://music.youtube.com/search?q=${encodeURIComponent(query)}`;
+const appleSearch = (query) => `https://music.apple.com/us/search?term=${encodeURIComponent(query)}`;
+const detailCatalog = {
+  "artist-double-g": {
+    kind: "artist",
+    title: "DOUBLE G",
+    eyebrow: "mozhno sound",
+    small: "GYB / WOW WOW",
+    description: "Центральное имя текущего среза. Через Double G собираются GYB, not for us и WOW WOW.",
+    meta: ["artist", "MOZHNO Sound", "Новороссийск"],
+    coverClass: "cover-art--double-g",
+    links: [
+      { label: "Apple Music", href: "https://music.apple.com/gb/artist/double-g/1604653397" },
+      { label: "Spotify", href: spotifySearch("Double G GYB WOW WOW") },
+      { label: "YouTube Music", href: youtubeMusicSearch("Double G GYB WOW WOW") }
+    ]
+  },
+  "artist-yarou": {
+    kind: "artist",
+    title: "YAROU",
+    eyebrow: "artist",
+    small: "WONME / GYB",
+    description: "Отдельный артист в WONME и часть общей связки в GYB. Карточка собирает его сольный и совместный контекст.",
+    meta: ["artist", "single focus", "Новороссийск"],
+    coverClass: "cover-art--yarou",
+    links: [
+      { label: "Apple Music", href: "https://music.apple.com/tr/artist/yarou/1858598824?l=tr" },
+      { label: "Spotify", href: spotifySearch("YAROU WONME") },
+      { label: "YouTube Music", href: youtubeMusicSearch("YAROU WONME") }
+    ]
+  },
+  "artist-uh-body": {
+    kind: "artist",
+    title: "UH! BODY",
+    eyebrow: "roster",
+    small: "GYB / NOT FOR US",
+    description: "Повторяющееся имя рядом с Double G: сначала GYB, потом not for us. Здесь собрана точка входа в связанные релизы.",
+    meta: ["artist", "roster", "Новороссийск"],
+    coverClass: "cover-art--uh-body",
+    links: [
+      { label: "Apple Music", href: appleSearch("UH! BODY") },
+      { label: "Spotify", href: spotifySearch("UH! BODY GYB not for us") },
+      { label: "YouTube Music", href: youtubeMusicSearch("UH! BODY GYB not for us") }
+    ]
+  },
+  "release-gyb": {
+    kind: "release",
+    title: "GYB",
+    eyebrow: "26 nov 2025",
+    small: "Double G / YAROU / UH! BODY",
+    description: "Совместный релиз, который собирает Double G, YAROU и UH! BODY в одном плотном треке.",
+    meta: ["release", "single", "2025"],
+    coverClass: "cover-art--gyb",
+    links: [
+      { label: "Apple Music", href: appleSearch("GYB Double G YAROU UH! BODY") },
+      { label: "Spotify", href: spotifySearch("GYB Double G YAROU UH! BODY") },
+      { label: "YouTube Music", href: youtubeMusicSearch("GYB Double G YAROU UH! BODY") }
+    ]
+  },
+  "release-wonme": {
+    kind: "release",
+    title: "WONME",
+    eyebrow: "28 nov 2025",
+    small: "YAROU",
+    description: "Сольный релиз YAROU. Отдельная точка входа в артиста и в связку с GYB.",
+    meta: ["release", "single", "2025"],
+    coverClass: "cover-art--wonme",
+    links: [
+      { label: "Apple Music", href: "https://music.apple.com/tr/song/1859245879?l=tr" },
+      { label: "Spotify", href: spotifySearch("WONME YAROU") },
+      { label: "YouTube Music", href: youtubeMusicSearch("WONME YAROU") }
+    ]
+  },
+  "release-not-for-us": {
+    kind: "release",
+    title: "NOT FOR US",
+    eyebrow: "26 dec 2025",
+    small: "Double G / UH! BODY",
+    description: "Связка Double G и UH! BODY после GYB. Темный, более плотный трек внутри той же линии релизов.",
+    meta: ["release", "single", "2025"],
+    coverClass: "cover-art--not-for-us",
+    links: [
+      { label: "Apple Music", href: "https://music.apple.com/ru/album/not-for-us-single/1864128486" },
+      { label: "Spotify", href: spotifySearch("not for us Double G UH! BODY") },
+      { label: "YouTube Music", href: youtubeMusicSearch("not for us Double G UH! BODY") }
+    ]
+  },
+  "release-wow-wow": {
+    kind: "release",
+    title: "WOW WOW",
+    eyebrow: "16 jan 2026",
+    small: "Double G",
+    description: "Сольный релиз Double G, который продолжает линию после not for us и закрывает этот текущий блок.",
+    meta: ["release", "single", "2026"],
+    coverClass: "cover-art--wow-wow",
+    links: [
+      { label: "Apple Music", href: appleSearch("WOW WOW Double G") },
+      { label: "Spotify", href: spotifySearch("WOW WOW Double G") },
+      { label: "YouTube Music", href: youtubeMusicSearch("WOW WOW Double G") }
+    ]
+  }
+};
 const rosterPanelStates = artistPanelParts.map((parts, index) => ({
   ...parts,
   index,
@@ -269,6 +385,7 @@ const setupRosterInteractions = () => {
     const handlePointerDown = (event) => {
       if (!canInteract()) return;
       if (event.button !== 0) return;
+      if (event.target instanceof Element && event.target.closest("a, button")) return;
 
       event.preventDefault();
       activeState = state;
@@ -354,6 +471,136 @@ const setupRosterInteractions = () => {
 };
 
 const cleanupRosterInteractions = setupRosterInteractions();
+
+const setupDetailCards = () => {
+  if (!(detailModal instanceof HTMLDialogElement) || !detailCards.length) return () => {};
+
+  const renderPills = (container, links) => {
+    if (!container) return;
+
+    container.replaceChildren(
+      ...links.map((link) => {
+        const anchor = document.createElement("a");
+        anchor.className = "listen-pill";
+        anchor.href = link.href;
+        anchor.target = "_blank";
+        anchor.rel = "noreferrer";
+        anchor.textContent = link.label;
+        return anchor;
+      })
+    );
+  };
+
+  const renderMeta = (container, items) => {
+    if (!container) return;
+
+    container.replaceChildren(
+      ...items.map((item) => {
+        const tag = document.createElement("span");
+        tag.className = "listen-pill";
+        tag.textContent = item;
+        return tag;
+      })
+    );
+  };
+
+  const closeModal = () => {
+    if (!detailModal.open) return;
+    detailModal.close();
+    document.body.classList.remove("is-modal-open");
+  };
+
+  const openModal = (detailId) => {
+    const item = detailCatalog[detailId];
+    if (!item || !detailCover || !detailEyebrow || !detailStrong || !detailSmall || !detailType || !detailTitle || !detailDescription || !detailMeta || !detailLinks) {
+      return;
+    }
+
+    detailCover.className = `detail-modal__cover cover-art ${item.coverClass}`;
+    detailEyebrow.textContent = item.eyebrow;
+    detailStrong.textContent = item.title;
+    detailSmall.textContent = item.small;
+    detailType.textContent = item.kind;
+    detailTitle.textContent = item.title;
+    detailDescription.textContent = item.description;
+    renderMeta(detailMeta, item.meta);
+    renderPills(detailLinks, item.links);
+
+    if (!detailModal.open) {
+      detailModal.showModal();
+    }
+
+    document.body.classList.add("is-modal-open");
+  };
+
+  const cleanupFns = detailCards.map((card) => {
+    const detailId = card.dataset.detailId;
+    const item = detailCatalog[detailId];
+    const pillsContainer = card.querySelector("[data-listen-pills]");
+
+    if (item && pillsContainer) {
+      renderPills(pillsContainer, item.links);
+    }
+
+    card.tabIndex = 0;
+    card.setAttribute("role", "button");
+    card.setAttribute("aria-haspopup", "dialog");
+
+    const handleClick = (event) => {
+      if (event.target instanceof Element && event.target.closest("a")) return;
+      if (!detailId) return;
+      openModal(detailId);
+    };
+
+    const handleKeyDown = (event) => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      if (!detailId) return;
+      event.preventDefault();
+      openModal(detailId);
+    };
+
+    card.addEventListener("click", handleClick);
+    card.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      card.removeEventListener("click", handleClick);
+      card.removeEventListener("keydown", handleKeyDown);
+    };
+  });
+
+  const handleDialogClick = (event) => {
+    if (event.target === detailModal) {
+      closeModal();
+    }
+  };
+
+  const handleCloseClick = () => {
+    closeModal();
+  };
+
+  const handleDialogClose = () => {
+    document.body.classList.remove("is-modal-open");
+  };
+
+  const handleDialogCancel = () => {
+    document.body.classList.remove("is-modal-open");
+  };
+
+  detailModal.addEventListener("click", handleDialogClick);
+  detailModal.addEventListener("close", handleDialogClose);
+  detailModal.addEventListener("cancel", handleDialogCancel);
+  detailClose?.addEventListener("click", handleCloseClick);
+
+  return () => {
+    cleanupFns.forEach((cleanup) => cleanup());
+    detailModal.removeEventListener("click", handleDialogClick);
+    detailModal.removeEventListener("close", handleDialogClose);
+    detailModal.removeEventListener("cancel", handleDialogCancel);
+    detailClose?.removeEventListener("click", handleCloseClick);
+  };
+};
+
+const cleanupDetailCards = setupDetailCards();
 
 const revealObserver = new IntersectionObserver(
   (entries) => {
@@ -553,6 +800,7 @@ window.addEventListener("pageshow", () => {
 window.addEventListener("beforeunload", () => {
   cleanupBackground();
   cleanupRosterInteractions();
+  cleanupDetailCards();
 });
 
 updateMotion();
