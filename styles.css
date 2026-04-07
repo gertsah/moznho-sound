@@ -285,7 +285,7 @@ a {
 .hero-stage__orbit {
   position: relative;
   width: min(100%, 1040px);
-  min-height: 120px;
+  min-height: 84px;
 }
 
 .hero-stage__tag {
@@ -624,21 +624,13 @@ a {
   }
 
   .hero-stage__orbit {
-    min-height: 108px;
+    min-height: 84px;
   }
 
   .hero-stage__tag {
     font-size: 0.6rem;
     letter-spacing: 0.14em;
     padding: 10px 12px;
-  }
-
-  .hero-stage__tag--left {
-    left: 0;
-  }
-
-  .hero-stage__tag--right {
-    right: 0;
   }
 
   .artist-panel,

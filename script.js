@@ -59,15 +59,19 @@ const updateHeroStage = () => {
     item.style.letterSpacing = "0.08em";
   });
 
-  heroTags.forEach((tag, index) => {
-    const direction = index === 0 ? -1 : index === 1 ? 1 : 0;
+  heroTags.forEach((tag) => {
     const local = clamp((progress - 0.24) / 0.36, 0, 1);
+    const isBottom = tag.classList.contains("hero-stage__tag--bottom");
+    const direction = tag.classList.contains("hero-stage__tag--left")
+      ? -1
+      : tag.classList.contains("hero-stage__tag--right")
+        ? 1
+        : 0;
     const x = snap(direction * local * 78);
-    const y = snap(index === 2 ? local * 20 : -local * 14);
-    tag.style.transform =
-      index === 2
-        ? `translate3d(calc(-50% + ${x}px), ${y}px, 0)`
-        : `translate3d(${x}px, ${y}px, 0)`;
+    const y = snap(isBottom ? local * 20 : -local * 14);
+    tag.style.transform = isBottom
+      ? `translate3d(calc(-50% + ${x}px), ${y}px, 0)`
+      : `translate3d(${x}px, ${y}px, 0)`;
     tag.style.opacity = String(0.45 + local * 0.55);
   });
 };
