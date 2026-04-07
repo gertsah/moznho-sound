@@ -20,6 +20,7 @@ const logoNames = document.querySelector("[data-logo-names]");
 const heroTags = [...document.querySelectorAll("[data-hero-tag]")];
 const nameItems = logoNames ? [...logoNames.querySelectorAll("span")] : [];
 const rosterStage = document.querySelector("[data-roster-stage]");
+const rosterStack = rosterStage?.querySelector(".roster-stage__stack");
 const artistPanels = rosterStage
   ? [...rosterStage.querySelectorAll("[data-artist-panel]")]
   : [];
@@ -165,7 +166,7 @@ const updateHeroStage = () => {
 };
 
 const updateRosterStage = () => {
-  if (!rosterStage || !artistPanelParts.length) return;
+  if (!rosterStage || !rosterStack || !artistPanelParts.length) return;
 
   if (window.innerWidth <= 1080) {
     artistPanelParts.forEach(({ panel, indexLabel, cover, body }) => {
@@ -188,22 +189,27 @@ const updateRosterStage = () => {
 
   const progress = getStageProgress(rosterStage);
   const wave = progress * Math.PI * 2.6;
+  const stackWidth = rosterStack.clientWidth;
+  const panelWidth = Math.min(stackWidth * 0.315, 360);
+  const remaining = Math.max(stackWidth - panelWidth * 3, 48);
+  const gap = remaining / 2;
   const layouts = [
-    { x: 0, y: 112, rotate: -8, scale: 0.88, prominence: 0.72, phase: 0.2, z: 2 },
-    { x: 126, y: 4, rotate: -2, scale: 1, prominence: 1, phase: 1.6, z: 4 },
-    { x: 256, y: 122, rotate: 7, scale: 0.86, prominence: 0.78, phase: 2.9, z: 3 }
+    { x: 0, y: 84, rotate: -7, scale: 0.94, prominence: 0.88, phase: 0.2, z: 2 },
+    { x: panelWidth + gap, y: 0, rotate: -1, scale: 1, prominence: 1, phase: 1.6, z: 4 },
+    { x: panelWidth * 2 + gap * 2, y: 98, rotate: 7, scale: 0.92, prominence: 0.9, phase: 2.9, z: 3 }
   ];
 
   artistPanelParts.forEach(({ panel, indexLabel, cover, body }, index) => {
     const layout = layouts[index] ?? layouts[layouts.length - 1];
-    const driftX = Math.cos(wave + layout.phase) * 18;
-    const driftY = Math.sin(wave * 1.12 + layout.phase) * 26;
-    const scale = layout.scale + Math.sin(wave * 0.82 + layout.phase) * 0.03;
-    const rotate = layout.rotate + Math.sin(wave + layout.phase) * 2.2;
-    const coverLift = Math.sin(wave * 1.3 + layout.phase) * 8;
-    const bodyLift = Math.cos(wave * 1.1 + layout.phase) * 10;
+    const driftX = Math.cos(wave + layout.phase) * 12;
+    const driftY = Math.sin(wave * 1.12 + layout.phase) * 18;
+    const scale = layout.scale + Math.sin(wave * 0.82 + layout.phase) * 0.02;
+    const rotate = layout.rotate + Math.sin(wave + layout.phase) * 1.6;
+    const coverLift = Math.sin(wave * 1.3 + layout.phase) * 6;
+    const bodyLift = Math.cos(wave * 1.1 + layout.phase) * 8;
     const prominence = layout.prominence;
 
+    panel.style.width = `${panelWidth}px`;
     panel.style.transform = `translate3d(${snap(layout.x + driftX)}px, ${snap(layout.y + driftY)}px, 0) scale(${scale}) rotate(${rotate}deg)`;
     panel.style.opacity = "1";
     panel.style.zIndex = String(layout.z);

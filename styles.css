@@ -299,14 +299,14 @@ main {
 
 .roster-stage__sticky {
   display: grid;
-  grid-template-columns: minmax(260px, 0.88fr) minmax(0, 1fr);
-  gap: 28px;
-  align-items: center;
+  grid-template-columns: 1fr;
+  gap: 30px;
+  align-content: center;
   padding: 104px 0 72px;
 }
 
 .roster-stage__head {
-  max-width: 340px;
+  max-width: 760px;
 }
 
 .section-label {
@@ -338,7 +338,8 @@ main {
 
 .roster-stage__stack {
   position: relative;
-  height: min(72vh, 760px);
+  width: 100%;
+  height: min(72vh, 720px);
   perspective: 1400px;
 }
 
@@ -346,16 +347,17 @@ main {
   position: absolute;
   top: 0;
   left: 0;
-  width: min(76%, 640px);
-  height: 100%;
+  width: min(31.5%, 360px);
+  min-height: min(62vh, 540px);
   display: grid;
-  grid-template-columns: minmax(200px, 250px) minmax(0, 1fr);
+  grid-template-columns: 1fr;
   grid-template-areas:
-    "index index"
-    "cover body";
-  align-items: end;
-  gap: 18px 22px;
-  padding: 28px;
+    "index"
+    "cover"
+    "body";
+  align-items: start;
+  gap: 16px;
+  padding: 22px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background:
@@ -385,7 +387,7 @@ main {
 .reel-card h3 {
   margin: 0;
   font-family: "Anton", sans-serif;
-  font-size: clamp(2.6rem, 6vw, 4.6rem);
+  font-size: clamp(2.1rem, 4vw, 3.6rem);
   line-height: 0.94;
   letter-spacing: 0.02em;
   text-transform: uppercase;
@@ -418,9 +420,9 @@ main {
 .artist-panel__body {
   grid-area: body;
   display: grid;
-  align-content: end;
-  gap: 14px;
-  opacity: 0.72;
+  align-content: start;
+  gap: 12px;
+  opacity: 1;
   will-change: transform, opacity;
 }
 
