@@ -39,14 +39,18 @@ const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)")
 const setupLavaLamp = () => {
   if (!lavaLayer) return () => {};
 
+  const wrap01 = (value) => ((value % 1) + 1) % 1;
+
   const configs = [
-    { anchorX: 0.05, anchorY: 0.18, size: 0.3, rangeX: 0.045, rangeY: 0.08, phase: 0.3, speedX: 0.34, speedY: 0.28, scaleRange: 0.08, stretchRange: 0.12, rotateRange: 10 },
-    { anchorX: 0.22, anchorY: 0.08, size: 0.24, rangeX: 0.038, rangeY: 0.065, phase: 1.1, speedX: 0.46, speedY: 0.33, scaleRange: 0.07, stretchRange: 0.1, rotateRange: 12 },
-    { anchorX: 0.74, anchorY: 0.1, size: 0.28, rangeX: 0.044, rangeY: 0.078, phase: 2.2, speedX: 0.36, speedY: 0.3, scaleRange: 0.08, stretchRange: 0.12, rotateRange: 9 },
-    { anchorX: 0.12, anchorY: 0.46, size: 0.22, rangeX: 0.05, rangeY: 0.09, phase: 3.1, speedX: 0.42, speedY: 0.35, scaleRange: 0.09, stretchRange: 0.14, rotateRange: 14 },
-    { anchorX: 0.48, anchorY: 0.38, size: 0.18, rangeX: 0.036, rangeY: 0.06, phase: 4.0, speedX: 0.51, speedY: 0.41, scaleRange: 0.08, stretchRange: 0.13, rotateRange: 16 },
-    { anchorX: 0.84, anchorY: 0.56, size: 0.24, rangeX: 0.042, rangeY: 0.084, phase: 5.0, speedX: 0.38, speedY: 0.3, scaleRange: 0.09, stretchRange: 0.12, rotateRange: 11 },
-    { anchorX: 0.58, anchorY: 0.84, size: 0.22, rangeX: 0.04, rangeY: 0.075, phase: 5.7, speedX: 0.4, speedY: 0.32, scaleRange: 0.08, stretchRange: 0.11, rotateRange: 13 }
+    { startX: -0.18, spanX: 1.52, baseY: 0.06, spanY: 0.08, size: 0.2, offset: 0.02, phase: 0.3, speed: 0.046, swayX: 0.012, swayY: 0.018, lift: 0.016, scaleRange: 0.05, stretchRange: 0.08, rotateRange: 8 },
+    { startX: -0.24, spanX: 1.56, baseY: 0.12, spanY: 0.07, size: 0.16, offset: 0.38, phase: 1.2, speed: 0.051, swayX: 0.014, swayY: 0.016, lift: 0.014, scaleRange: 0.05, stretchRange: 0.08, rotateRange: 10 },
+    { startX: -0.22, spanX: 1.54, baseY: 0.2, spanY: 0.09, size: 0.18, offset: 0.7, phase: 2.1, speed: 0.048, swayX: 0.013, swayY: 0.018, lift: 0.014, scaleRange: 0.06, stretchRange: 0.09, rotateRange: 9 },
+    { startX: -0.16, spanX: 1.5, baseY: 0.34, spanY: -0.06, size: 0.17, offset: 0.12, phase: 2.9, speed: 0.043, swayX: 0.012, swayY: 0.014, lift: 0.012, scaleRange: 0.05, stretchRange: 0.08, rotateRange: 9 },
+    { startX: -0.22, spanX: 1.55, baseY: 0.42, spanY: -0.08, size: 0.15, offset: 0.52, phase: 3.7, speed: 0.05, swayX: 0.014, swayY: 0.018, lift: 0.013, scaleRange: 0.05, stretchRange: 0.09, rotateRange: 11 },
+    { startX: -0.2, spanX: 1.52, baseY: 0.5, spanY: -0.05, size: 0.19, offset: 0.86, phase: 4.2, speed: 0.045, swayX: 0.013, swayY: 0.016, lift: 0.015, scaleRange: 0.06, stretchRange: 0.08, rotateRange: 8 },
+    { startX: -0.18, spanX: 1.5, baseY: 0.66, spanY: 0.05, size: 0.18, offset: 0.18, phase: 4.9, speed: 0.047, swayX: 0.012, swayY: 0.016, lift: 0.014, scaleRange: 0.05, stretchRange: 0.08, rotateRange: 10 },
+    { startX: -0.22, spanX: 1.56, baseY: 0.76, spanY: 0.08, size: 0.16, offset: 0.46, phase: 5.3, speed: 0.053, swayX: 0.015, swayY: 0.018, lift: 0.015, scaleRange: 0.05, stretchRange: 0.09, rotateRange: 10 },
+    { startX: -0.2, spanX: 1.54, baseY: 0.88, spanY: 0.06, size: 0.2, offset: 0.78, phase: 6.1, speed: 0.044, swayX: 0.013, swayY: 0.015, lift: 0.015, scaleRange: 0.06, stretchRange: 0.09, rotateRange: 9 }
   ];
 
   lavaLayer.replaceChildren();
@@ -61,26 +65,27 @@ const setupLavaLamp = () => {
   let frameId = 0;
 
   const renderLava = (time = 0) => {
-    const t = time * 0.0011;
+    const t = time * 0.001;
     const width = window.innerWidth;
     const height = window.innerHeight;
     const minSide = Math.min(width, height);
 
     blobs.forEach((blob) => {
       const size = minSide * blob.size;
-      const driftX =
-        Math.sin(t * blob.speedX + blob.phase) * width * blob.rangeX +
-        Math.cos(t * blob.speedY * 0.8 + blob.phase * 1.7) * width * blob.rangeX * 0.4;
-      const driftY =
-        Math.cos(t * blob.speedY + blob.phase) * height * blob.rangeY +
-        Math.sin(t * blob.speedX * 0.7 + blob.phase * 1.2) * height * blob.rangeY * 0.34;
-      const scale = 0.96 + Math.sin(t * (blob.speedX + blob.speedY) + blob.phase) * blob.scaleRange;
-      const stretch = Math.cos(t * (blob.speedX * 0.92 + blob.speedY * 0.76) + blob.phase * 1.3) * blob.stretchRange;
+      const flow = wrap01(t * blob.speed + blob.offset);
+      const ribbon = Math.sin(flow * Math.PI * 2 + blob.phase);
+      const sweep = Math.cos(t * (blob.speed * 7.4) + blob.phase * 1.3);
+      const pulse = Math.sin(t * (blob.speed * 6.1) + blob.phase * 0.8);
+      const scale = 0.97 + pulse * blob.scaleRange;
+      const stretch = Math.cos(t * (blob.speed * 8.2) + blob.phase * 1.5) * blob.stretchRange;
       const scaleX = scale + stretch;
       const scaleY = scale - stretch * 0.72;
-      const rotation = Math.sin(t * (blob.speedX * 0.6 + blob.speedY * 0.5) + blob.phase) * blob.rotateRange;
-      const x = width * blob.anchorX + driftX;
-      const y = height * blob.anchorY + driftY;
+      const rotation = Math.sin(t * (blob.speed * 5.6) + blob.phase) * blob.rotateRange;
+      const x = width * (blob.startX + flow * blob.spanX) + sweep * width * blob.swayX;
+      const y =
+        height * (blob.baseY + flow * blob.spanY) +
+        ribbon * height * blob.swayY +
+        pulse * height * blob.lift;
 
       blob.node.style.width = `${size}px`;
       blob.node.style.height = `${size}px`;
