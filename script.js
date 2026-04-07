@@ -36,24 +36,20 @@ const reelCards = reelSection ? [...reelSection.querySelectorAll(".reel-card")] 
 const backgroundCanvas = document.querySelector("[data-bg-canvas]");
 const cursorOrb = document.querySelector("[data-cursor-orb]");
 const detailCards = [...document.querySelectorAll("[data-detail-id]")];
-const detailModal = document.querySelector("[data-detail-modal]");
-const detailModalSurface = detailModal?.querySelector(".detail-modal__surface");
-const detailCover = detailModal?.querySelector("[data-detail-cover]");
-const detailEyebrow = detailModal?.querySelector("[data-detail-eyebrow]");
-const detailStrong = detailModal?.querySelector("[data-detail-strong]");
-const detailSmall = detailModal?.querySelector("[data-detail-small]");
-const detailType = detailModal?.querySelector("[data-detail-type]");
-const detailTitle = detailModal?.querySelector("[data-detail-title]");
-const detailDescription = detailModal?.querySelector("[data-detail-description]");
-const detailMeta = detailModal?.querySelector("[data-detail-meta]");
-const detailLinks = detailModal?.querySelector("[data-detail-links]");
-const detailClose = detailModal?.querySelector("[data-detail-close]");
 const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 const finePointerQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
 const easeOutCubic = (value) => 1 - Math.pow(1 - value, 3);
 const spotifySearch = (query) => `https://open.spotify.com/search/${encodeURIComponent(query)}`;
 const youtubeMusicSearch = (query) => `https://music.youtube.com/search?q=${encodeURIComponent(query)}`;
 const appleSearch = (query) => `https://music.apple.com/us/search?term=${encodeURIComponent(query)}`;
+const releaseLinks = {
+  gyb: "https://band.link/gybmozhnosound",
+  notForUs: "https://band.link/notforuzzz",
+  wowWow: "https://band.link/wowwow193",
+  vibekilla: "https://band.link/vibekilla",
+  wonme: "https://band.link/vvonme",
+  lady: "https://union.promo/Lady"
+};
 const detailCatalog = {
   "artist-double-g": {
     kind: "artist",
@@ -153,6 +149,92 @@ const detailCatalog = {
       { label: "YouTube Music", href: youtubeMusicSearch("WOW WOW Double G") }
     ]
   }
+};
+
+detailCatalog["artist-double-g"] = {
+  ...detailCatalog["artist-double-g"],
+  description: "Центральное имя в текущем срезе релизов. Через Double G собираются GYB, not for us и WOW WOW.",
+  preview: ["artist", "3 releases"],
+  meta: ["artist", "MOZHNO Sound", "Новороссийск"],
+  links: [
+    { label: "GYB", href: releaseLinks.gyb },
+    { label: "NOT FOR US", href: releaseLinks.notForUs },
+    { label: "WOW WOW", href: releaseLinks.wowWow }
+  ]
+};
+
+detailCatalog["artist-yarou"] = {
+  ...detailCatalog["artist-yarou"],
+  description: "Отдельный артист в WONME и часть общей связки в GYB. Карточка собирает его сольный и совместный контекст.",
+  preview: ["artist", "2 releases"],
+  meta: ["artist", "single focus", "Новороссийск"],
+  links: [
+    { label: "WONME", href: releaseLinks.wonme },
+    { label: "GYB", href: releaseLinks.gyb }
+  ]
+};
+
+detailCatalog["artist-uh-body"] = {
+  ...detailCatalog["artist-uh-body"],
+  description: "Повторяющееся имя рядом с Double G: сначала GYB, потом not for us. Здесь собрана точка входа в связанные релизы.",
+  preview: ["artist", "2 releases"],
+  meta: ["artist", "roster", "Новороссийск"],
+  links: [
+    { label: "GYB", href: releaseLinks.gyb },
+    { label: "NOT FOR US", href: releaseLinks.notForUs }
+  ]
+};
+
+detailCatalog["release-gyb"] = {
+  ...detailCatalog["release-gyb"],
+  description: "Совместный релиз, который собирает Double G, YAROU и UH! BODY в одном плотном треке.",
+  preview: ["release", "band.link"],
+  links: [{ label: "listen", href: releaseLinks.gyb }]
+};
+
+detailCatalog["release-wonme"] = {
+  ...detailCatalog["release-wonme"],
+  description: "Сольный релиз YAROU. Отдельная точка входа в артиста и в связку с GYB.",
+  preview: ["release", "band.link"],
+  links: [{ label: "listen", href: releaseLinks.wonme }]
+};
+
+detailCatalog["release-not-for-us"] = {
+  ...detailCatalog["release-not-for-us"],
+  description: "Связка Double G и UH! BODY после GYB. Темный, более плотный трек внутри той же линии релизов.",
+  preview: ["release", "band.link"],
+  links: [{ label: "listen", href: releaseLinks.notForUs }]
+};
+
+detailCatalog["release-wow-wow"] = {
+  ...detailCatalog["release-wow-wow"],
+  description: "Сольный релиз Double G, который продолжает линию после not for us и закрывает текущий блок.",
+  preview: ["release", "band.link"],
+  links: [{ label: "listen", href: releaseLinks.wowWow }]
+};
+
+detailCatalog["release-vibekilla"] = {
+  kind: "release",
+  title: "VIBEKILLA",
+  eyebrow: "new release",
+  small: "MOZHNO Sound",
+  description: "Новый релиз в потоке MOZHNO Sound. Карточка раскрывается прямо в ленте и показывает ссылку на прослушивание.",
+  preview: ["release", "band.link"],
+  meta: ["release", "single", "new"],
+  coverClass: "cover-art--vibekilla",
+  links: [{ label: "listen", href: releaseLinks.vibekilla }]
+};
+
+detailCatalog["release-lady"] = {
+  kind: "release",
+  title: "LADY",
+  eyebrow: "new release",
+  small: "MOZHNO Sound",
+  description: "Релиз Lady добавлен в общий поток. В раскрытой карточке есть прямая плашка на страницу прослушивания.",
+  preview: ["release", "union"],
+  meta: ["release", "single", "new"],
+  coverClass: "cover-art--lady",
+  links: [{ label: "listen", href: releaseLinks.lady }]
 };
 const rosterPanelStates = artistPanelParts.map((parts, index) => ({
   ...parts,
@@ -473,90 +555,126 @@ const setupRosterInteractions = () => {
 const cleanupRosterInteractions = setupRosterInteractions();
 
 const setupDetailCards = () => {
-  if (!(detailModal instanceof HTMLDialogElement) || !detailCards.length) return () => {};
+  if (!detailCards.length) return () => {};
 
-  const renderPills = (container, links) => {
-    if (!container) return;
-
-    container.replaceChildren(
-      ...links.map((link) => {
-        const anchor = document.createElement("a");
-        anchor.className = "listen-pill";
-        anchor.href = link.href;
-        anchor.target = "_blank";
-        anchor.rel = "noreferrer";
-        anchor.textContent = link.label;
-        return anchor;
-      })
-    );
+  const expandedCards = {
+    artist: null,
+    release: null
   };
 
-  const renderMeta = (container, items) => {
+  const renderPreviewPills = (container, item) => {
     if (!container) return;
 
+    const previewItems = item.preview?.length ? item.preview : (item.meta?.slice(0, 2) ?? []);
+
     container.replaceChildren(
-      ...items.map((item) => {
+      ...previewItems.map((preview) => {
         const tag = document.createElement("span");
-        tag.className = "listen-pill";
-        tag.textContent = item;
+        tag.className = "listen-pill listen-pill--meta";
+        tag.textContent = preview;
         return tag;
       })
     );
   };
 
-  const closeModal = () => {
-    if (!detailModal.open) return;
-    detailModal.close();
-    document.body.classList.remove("is-modal-open");
+  const buildDetailContent = (item) => {
+    const detail = document.createElement("div");
+    detail.className = "card-detail";
+
+    const copy = document.createElement("div");
+    copy.className = "card-detail__copy";
+
+    const lead = document.createElement("p");
+    lead.className = "card-detail__lead";
+    lead.textContent = item.description;
+
+    const meta = document.createElement("div");
+    meta.className = "card-detail__meta";
+    (item.meta ?? []).forEach((metaItem) => {
+      const tag = document.createElement("span");
+      tag.className = "listen-pill listen-pill--meta";
+      tag.textContent = metaItem;
+      meta.append(tag);
+    });
+
+    const links = document.createElement("div");
+    links.className = "card-detail__links";
+    (item.links ?? []).forEach((link) => {
+      const anchor = document.createElement("a");
+      anchor.className = "listen-pill listen-pill--plaque";
+      anchor.href = link.href;
+      anchor.textContent = link.label;
+      links.append(anchor);
+    });
+
+    copy.append(lead, meta, links);
+    detail.append(copy);
+
+    return detail;
   };
 
-  const openModal = (detailId) => {
-    const item = detailCatalog[detailId];
-    if (!item || !detailCover || !detailEyebrow || !detailStrong || !detailSmall || !detailType || !detailTitle || !detailDescription || !detailMeta || !detailLinks) {
-      return;
+  const syncExpandedFlags = () => {
+    reelTrack?.classList.toggle("has-expanded", Boolean(expandedCards.release));
+    rosterStack?.classList.toggle("has-expanded", Boolean(expandedCards.artist));
+  };
+
+  const collapseCard = (card) => {
+    if (!card) return;
+    card.classList.remove("is-expanded");
+    card.setAttribute("aria-expanded", "false");
+  };
+
+  const setExpandedCard = (group, nextCard) => {
+    if (expandedCards[group] && expandedCards[group] !== nextCard) {
+      collapseCard(expandedCards[group]);
     }
 
-    detailCover.className = `detail-modal__cover cover-art ${item.coverClass}`;
-    detailEyebrow.textContent = item.eyebrow;
-    detailStrong.textContent = item.title;
-    detailSmall.textContent = item.small;
-    detailType.textContent = item.kind;
-    detailTitle.textContent = item.title;
-    detailDescription.textContent = item.description;
-    renderMeta(detailMeta, item.meta);
-    renderPills(detailLinks, item.links);
-
-    if (!detailModal.open) {
-      detailModal.showModal();
+    if (expandedCards[group] === nextCard) {
+      collapseCard(nextCard);
+      expandedCards[group] = null;
+    } else {
+      nextCard.classList.add("is-expanded");
+      nextCard.setAttribute("aria-expanded", "true");
+      expandedCards[group] = nextCard;
     }
 
-    document.body.classList.add("is-modal-open");
+    syncExpandedFlags();
+    requestFrame();
   };
 
   const cleanupFns = detailCards.map((card) => {
     const detailId = card.dataset.detailId;
-    const item = detailCatalog[detailId];
+    const item = detailId ? detailCatalog[detailId] : null;
     const pillsContainer = card.querySelector("[data-listen-pills]");
+    const host = card.classList.contains("artist-panel")
+      ? card.querySelector(".artist-panel__body")
+      : card;
 
     if (item && pillsContainer) {
-      renderPills(pillsContainer, item.links);
+      renderPreviewPills(pillsContainer, item);
+    }
+
+    if (item && host) {
+      host.append(buildDetailContent(item));
     }
 
     card.tabIndex = 0;
     card.setAttribute("role", "button");
-    card.setAttribute("aria-haspopup", "dialog");
+    card.setAttribute("aria-expanded", "false");
+
+    const group = card.classList.contains("artist-panel") ? "artist" : "release";
 
     const handleClick = (event) => {
+      if (!item) return;
       if (event.target instanceof Element && event.target.closest("a")) return;
-      if (!detailId) return;
-      openModal(detailId);
+      setExpandedCard(group, card);
     };
 
     const handleKeyDown = (event) => {
+      if (!item) return;
       if (event.key !== "Enter" && event.key !== " ") return;
-      if (!detailId) return;
       event.preventDefault();
-      openModal(detailId);
+      setExpandedCard(group, card);
     };
 
     card.addEventListener("click", handleClick);
@@ -568,35 +686,22 @@ const setupDetailCards = () => {
     };
   });
 
-  const handleDialogClick = (event) => {
-    if (event.target === detailModal) {
-      closeModal();
-    }
+  const handleEscape = (event) => {
+    if (event.key !== "Escape") return;
+
+    collapseCard(expandedCards.artist);
+    collapseCard(expandedCards.release);
+    expandedCards.artist = null;
+    expandedCards.release = null;
+    syncExpandedFlags();
+    requestFrame();
   };
 
-  const handleCloseClick = () => {
-    closeModal();
-  };
-
-  const handleDialogClose = () => {
-    document.body.classList.remove("is-modal-open");
-  };
-
-  const handleDialogCancel = () => {
-    document.body.classList.remove("is-modal-open");
-  };
-
-  detailModal.addEventListener("click", handleDialogClick);
-  detailModal.addEventListener("close", handleDialogClose);
-  detailModal.addEventListener("cancel", handleDialogCancel);
-  detailClose?.addEventListener("click", handleCloseClick);
+  document.addEventListener("keydown", handleEscape);
 
   return () => {
     cleanupFns.forEach((cleanup) => cleanup());
-    detailModal.removeEventListener("click", handleDialogClick);
-    detailModal.removeEventListener("close", handleDialogClose);
-    detailModal.removeEventListener("cancel", handleDialogCancel);
-    detailClose?.removeEventListener("click", handleCloseClick);
+    document.removeEventListener("keydown", handleEscape);
   };
 };
 
@@ -656,6 +761,7 @@ const updateRosterStage = () => {
       panel.style.opacity = "";
       panel.style.zIndex = "";
       panel.style.width = "";
+      panel.style.minHeight = "";
       panel.classList.remove("is-ready");
 
       if (indexLabel) indexLabel.style.opacity = "";
@@ -675,18 +781,45 @@ const updateRosterStage = () => {
   const time = performance.now() * 0.001;
   let needsAnotherFrame = false;
   const stackWidth = rosterStack.clientWidth;
-  const panelWidth = Math.min(stackWidth * 0.315, 360);
-  const remaining = Math.max(stackWidth - panelWidth * 3, 48);
+  const basePanelWidth = Math.min(stackWidth * 0.315, 360);
+  const remaining = Math.max(stackWidth - basePanelWidth * 3, 48);
   const gap = remaining / 2;
-  const layouts = [
-    { x: 0, y: 84, rotate: -7, scale: 0.94, prominence: 0.88, phase: 0.2, z: 2 },
-    { x: panelWidth + gap, y: 0, rotate: -1, scale: 1, prominence: 1, phase: 1.6, z: 4 },
-    { x: panelWidth * 2 + gap * 2, y: 98, rotate: 7, scale: 0.92, prominence: 0.9, phase: 2.9, z: 3 }
+  const expandedIndex = rosterPanelStates.findIndex(({ panel }) => panel.classList.contains("is-expanded"));
+  let layouts = [
+    { x: 0, y: 84, rotate: -7, scale: 0.94, prominence: 0.88, phase: 0.2, z: 2, width: basePanelWidth },
+    { x: basePanelWidth + gap, y: 0, rotate: -1, scale: 1, prominence: 1, phase: 1.6, z: 4, width: basePanelWidth },
+    { x: basePanelWidth * 2 + gap * 2, y: 98, rotate: 7, scale: 0.92, prominence: 0.9, phase: 2.9, z: 3, width: basePanelWidth }
   ];
+
+  if (expandedIndex !== -1) {
+    const expandedWidth = clamp(stackWidth * 0.44, 420, 560);
+    const sideWidth = clamp((stackWidth - expandedWidth - 88) / 2, 220, 300);
+
+    if (expandedIndex === 0) {
+      layouts = [
+        { x: 0, y: 18, rotate: -3, scale: 1.02, prominence: 1.08, phase: 0.2, z: 5, width: expandedWidth },
+        { x: expandedWidth + 28, y: 102, rotate: -2, scale: 0.88, prominence: 0.78, phase: 1.6, z: 3, width: sideWidth },
+        { x: stackWidth - sideWidth, y: 128, rotate: 8, scale: 0.86, prominence: 0.74, phase: 2.9, z: 2, width: sideWidth }
+      ];
+    } else if (expandedIndex === 1) {
+      layouts = [
+        { x: 0, y: 118, rotate: -9, scale: 0.84, prominence: 0.72, phase: 0.2, z: 2, width: sideWidth },
+        { x: (stackWidth - expandedWidth) / 2, y: 0, rotate: -1, scale: 1.02, prominence: 1.08, phase: 1.6, z: 5, width: expandedWidth },
+        { x: stackWidth - sideWidth, y: 126, rotate: 9, scale: 0.84, prominence: 0.72, phase: 2.9, z: 2, width: sideWidth }
+      ];
+    } else if (expandedIndex === 2) {
+      layouts = [
+        { x: 0, y: 126, rotate: -8, scale: 0.86, prominence: 0.74, phase: 0.2, z: 2, width: sideWidth },
+        { x: sideWidth + 28, y: 100, rotate: 2, scale: 0.88, prominence: 0.78, phase: 1.6, z: 3, width: sideWidth },
+        { x: stackWidth - expandedWidth, y: 18, rotate: 3, scale: 1.02, prominence: 1.08, phase: 2.9, z: 5, width: expandedWidth }
+      ];
+    }
+  }
 
   rosterPanelStates.forEach((state, index) => {
     const { panel, indexLabel, cover, body } = state;
     const layout = layouts[index] ?? layouts[layouts.length - 1];
+    const isExpanded = panel.classList.contains("is-expanded");
     const introStart = 0.04 + index * 0.1;
     const introEnd = introStart + 0.32;
     const intro = reducedMotionQuery.matches
@@ -725,7 +858,8 @@ const updateRosterStage = () => {
       needsAnotherFrame = true;
     }
 
-    panel.style.width = `${panelWidth}px`;
+    panel.style.width = `${layout.width}px`;
+    panel.style.minHeight = isExpanded ? `${snap(Math.min(window.innerHeight * 0.78, 720))}px` : "";
     panel.style.transform = `translate3d(${snap(x + state.dragX)}px, ${snap(y + state.dragY - lift)}px, ${state.dragging ? 84 : 0}px) scale(${scale + (state.dragging ? 0.03 : 0)}) rotate(${rotate + state.dragRotate}deg)`;
     panel.style.opacity = String(0.2 + intro * 0.8);
     panel.style.zIndex = String(layout.z + (state.dragging ? 10 : 0));
@@ -737,13 +871,13 @@ const updateRosterStage = () => {
 
     if (cover) {
       const coverLift = (1 - intro) * 44 + Math.sin(time * 1.3 + layout.phase) * 6;
-      cover.style.opacity = String((0.2 + prominence * 0.8) * intro);
-      cover.style.transform = `translate3d(0, ${snap(coverLift)}px, 0) scale(${0.88 + prominence * 0.12 * intro})`;
+      cover.style.opacity = String((0.2 + prominence * 0.8 + (isExpanded ? 0.08 : 0)) * intro);
+      cover.style.transform = `translate3d(0, ${snap(coverLift)}px, 0) scale(${0.88 + prominence * 0.12 * intro + (isExpanded ? 0.02 : 0)})`;
     }
 
     if (body) {
       const bodyLift = (1 - intro) * 54 + Math.cos(time * 1.08 + layout.phase) * 8;
-      body.style.opacity = String((0.16 + prominence * 0.84) * intro);
+      body.style.opacity = String((0.16 + prominence * 0.84 + (isExpanded ? 0.08 : 0)) * intro);
       body.style.transform = `translate3d(0, ${snap(bodyLift)}px, 0)`;
     }
   });
@@ -755,17 +889,35 @@ const updateReel = () => {
   if (!reelSection || !reelTrack || !reelCards.length || window.innerWidth <= 1080) return;
 
   const progress = getStageProgress(reelSection);
+  const focusIndex = progress * (reelCards.length - 1);
+  const expandedIndex = reelCards.findIndex((card) => card.classList.contains("is-expanded"));
 
   reelTrack.style.transform = `translate3d(${-progress * 34}%, 0, 0)`;
 
   reelCards.forEach((card, index) => {
-    const focus = clamp(1 - Math.abs(progress * (reelCards.length - 1) - index) * 0.26, 0.9, 1);
-    const lift = (focus - 0.9) * 140;
-    const tilt = (index - progress * (reelCards.length - 1)) * 2.2;
+    const isExpanded = card.classList.contains("is-expanded");
+    const distance = Math.abs(focusIndex - index);
+    let focus = clamp(1 - distance * 0.26, 0.9, 1);
+    let lift = (focus - 0.9) * 140;
+    let tilt = (index - focusIndex) * 2.2;
+
+    if (expandedIndex !== -1) {
+      const offsetFromExpanded = index - expandedIndex;
+
+      if (isExpanded) {
+        focus = 1.04;
+        lift += 34;
+        tilt *= 0.32;
+      } else {
+        focus = Math.max(0.88, focus - 0.06);
+        lift -= 8;
+        tilt += offsetFromExpanded * 1.2;
+      }
+    }
 
     card.style.transform = `translate3d(0, ${-lift}px, 0) scale(${focus}) rotate(${tilt}deg)`;
-    card.style.opacity = String(clamp(0.56 + (focus - 0.9) * 4.2, 0.56, 1));
-    card.style.zIndex = String(Math.round(focus * 100));
+    card.style.opacity = String(clamp(0.56 + (focus - 0.88) * 2.8, 0.52, 1));
+    card.style.zIndex = String(isExpanded ? 180 : Math.round(focus * 100));
   });
 };
 
