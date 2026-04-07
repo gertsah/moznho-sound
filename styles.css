@@ -79,13 +79,13 @@ a {
   inset: -14%;
   z-index: 1;
   opacity: 0.98;
-  filter: blur(24px) contrast(18);
+  filter: blur(16px) contrast(17);
   transform: translate3d(0, 0, 0);
   animation: lavaField 18s linear infinite alternate;
 }
 
 .bg-shader__blob {
-  --size: clamp(260px, 34vw, 760px);
+  --size: clamp(150px, 18vw, 360px);
   position: absolute;
   width: var(--size);
   height: calc(var(--size) * 1.08);
@@ -103,36 +103,36 @@ a {
 }
 
 .bg-shader__blob--1 {
-  --size: clamp(320px, 34vw, 720px);
-  top: 14%;
-  left: 8%;
+  --size: clamp(220px, 24vw, 470px);
+  top: 16%;
+  left: 9%;
   animation: lavaFloatLeft 12s ease-in-out infinite alternate;
 }
 
 .bg-shader__blob--2 {
-  --size: clamp(280px, 28vw, 620px);
-  top: 21%;
-  left: 18%;
+  --size: clamp(180px, 20vw, 380px);
+  top: 26%;
+  left: 20%;
   animation: lavaBridgeLeft 10s ease-in-out infinite alternate;
 }
 
 .bg-shader__blob--3 {
-  --size: clamp(280px, 26vw, 600px);
-  top: 20%;
-  right: 10%;
+  --size: clamp(210px, 23vw, 430px);
+  top: 18%;
+  right: 9%;
   animation: lavaFloatRight 13s ease-in-out infinite alternate-reverse;
 }
 
 .bg-shader__blob--4 {
-  --size: clamp(220px, 22vw, 480px);
-  top: 31%;
-  right: 4%;
+  --size: clamp(160px, 18vw, 320px);
+  top: 34%;
+  right: 6%;
   animation: lavaBridgeRight 9s ease-in-out infinite alternate-reverse;
   animation-delay: -3s;
 }
 
 .bg-shader__blob--5 {
-  --size: clamp(220px, 20vw, 420px);
+  --size: clamp(170px, 18vw, 320px);
   left: -8%;
   bottom: -8%;
   animation: lavaCornerLeft 14s ease-in-out infinite alternate;
@@ -140,7 +140,7 @@ a {
 }
 
 .bg-shader__blob--6 {
-  --size: clamp(260px, 24vw, 520px);
+  --size: clamp(190px, 20vw, 360px);
   right: -4%;
   bottom: -14%;
   animation: lavaCornerRight 15s ease-in-out infinite alternate-reverse;
@@ -148,19 +148,67 @@ a {
 }
 
 .bg-shader__blob--7 {
-  --size: clamp(140px, 14vw, 260px);
-  top: -3%;
+  --size: clamp(110px, 12vw, 200px);
+  top: 2%;
   left: 58%;
   animation: lavaBubbleTop 8s ease-in-out infinite alternate;
 }
 
 .bg-shader__blob--8 {
-  --size: clamp(160px, 16vw, 300px);
+  --size: clamp(120px, 12vw, 220px);
   top: 58%;
   left: 36%;
   opacity: 0.88;
   animation: lavaBubbleMid 11s ease-in-out infinite alternate-reverse;
   animation-delay: -4s;
+}
+
+.bg-shader__blob--9 {
+  --size: clamp(130px, 13vw, 240px);
+  top: 8%;
+  left: 26%;
+  animation: lavaBubbleTop 7s ease-in-out infinite alternate-reverse;
+  animation-delay: -2s;
+}
+
+.bg-shader__blob--10 {
+  --size: clamp(140px, 14vw, 260px);
+  top: 46%;
+  left: 10%;
+  animation: lavaBubbleMid 9s ease-in-out infinite alternate;
+  animation-delay: -5s;
+}
+
+.bg-shader__blob--11 {
+  --size: clamp(120px, 13vw, 220px);
+  top: 42%;
+  right: 18%;
+  animation: lavaBubbleTop 8.5s ease-in-out infinite alternate;
+  animation-delay: -1s;
+}
+
+.bg-shader__blob--12 {
+  --size: clamp(130px, 13vw, 240px);
+  top: 62%;
+  right: 26%;
+  animation: lavaBubbleMid 10s ease-in-out infinite alternate-reverse;
+  animation-delay: -3s;
+}
+
+.bg-shader__blob--13 {
+  --size: clamp(100px, 11vw, 200px);
+  top: 30%;
+  left: 46%;
+  animation: lavaBubbleTop 6.5s ease-in-out infinite alternate;
+  animation-delay: -4s;
+}
+
+.bg-shader__blob--14 {
+  --size: clamp(110px, 12vw, 220px);
+  bottom: 8%;
+  left: 56%;
+  animation: lavaBubbleMid 8.5s ease-in-out infinite alternate;
+  animation-delay: -6s;
 }
 
 @keyframes lavaField {
