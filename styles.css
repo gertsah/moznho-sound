@@ -53,6 +53,7 @@ a {
   inset: -18%;
   z-index: -4;
   opacity: 0.98;
+  overflow: hidden;
   background:
     radial-gradient(44% 30% at 50% 22%, rgba(237, 229, 246, 0.3), transparent 60%),
     radial-gradient(36% 24% at 44% 46%, rgba(237, 229, 246, 0.18), transparent 62%),
@@ -61,6 +62,16 @@ a {
   filter: blur(18px) saturate(128%);
   transform-origin: 50% 42%;
   animation: shaderDrift 24s ease-in-out infinite alternate;
+}
+
+.bg-shader__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  opacity: 0.96;
+  mix-blend-mode: screen;
 }
 
 .bg-shader::before,
@@ -373,15 +384,19 @@ a {
 
 .roster-stage__stack {
   position: relative;
-  height: min(76vh, 780px);
+  height: min(72vh, 760px);
 }
 
 .artist-panel {
   position: absolute;
   inset: 0;
   display: grid;
-  align-content: space-between;
-  gap: 16px;
+  grid-template-columns: minmax(200px, 250px) minmax(0, 1fr);
+  grid-template-areas:
+    "index index"
+    "cover body";
+  align-items: end;
+  gap: 18px 22px;
   padding: 28px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
@@ -399,6 +414,10 @@ a {
   text-transform: uppercase;
   letter-spacing: 0.2em;
   font-size: 0.76rem;
+}
+
+.artist-panel__index {
+  grid-area: index;
 }
 
 .artist-panel h3,
@@ -428,6 +447,122 @@ a {
   color: var(--soft);
 }
 
+.artist-panel__cover {
+  grid-area: cover;
+  width: 100%;
+}
+
+.artist-panel__body {
+  grid-area: body;
+  display: grid;
+  align-content: end;
+  gap: 14px;
+}
+
+.cover-art {
+  --cover-base: #09090d;
+  --cover-glow: rgba(237, 229, 246, 0.18);
+  --cover-highlight: rgba(255, 255, 255, 0.12);
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 1;
+  display: grid;
+  align-content: end;
+  gap: 10px;
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: calc(var(--radius) - 8px);
+  background:
+    radial-gradient(circle at 22% 18%, var(--cover-glow), transparent 30%),
+    radial-gradient(circle at 72% 76%, rgba(255, 255, 255, 0.08), transparent 24%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)),
+    var(--cover-base);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 24px 48px rgba(0, 0, 0, 0.3);
+  isolation: isolate;
+}
+
+.cover-art::before,
+.cover-art::after {
+  content: "";
+  position: absolute;
+  inset: auto;
+  border-radius: 999px;
+  pointer-events: none;
+}
+
+.cover-art::before {
+  width: 72%;
+  height: 72%;
+  right: -16%;
+  top: -12%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.12), transparent 68%);
+  filter: blur(10px);
+}
+
+.cover-art::after {
+  width: 120%;
+  height: 2px;
+  left: -10%;
+  bottom: 28%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.18), transparent);
+  opacity: 0.7;
+  transform: rotate(-18deg);
+}
+
+.cover-art__eyebrow,
+.cover-art small {
+  position: relative;
+  z-index: 1;
+  display: block;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+}
+
+.cover-art__eyebrow {
+  color: rgba(255, 255, 255, 0.66);
+  font-size: 0.62rem;
+}
+
+.cover-art strong {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  font-family: "Anton", sans-serif;
+  font-size: clamp(2.2rem, 4vw, 3.6rem);
+  line-height: 0.88;
+  letter-spacing: 0.04em;
+}
+
+.cover-art small {
+  color: rgba(255, 255, 255, 0.74);
+  font-size: 0.64rem;
+}
+
+.cover-art--double-g,
+.cover-art--gyb {
+  --cover-base: #060609;
+  --cover-glow: rgba(237, 229, 246, 0.24);
+}
+
+.cover-art--yarou,
+.cover-art--wonme {
+  --cover-base: #0a0a0f;
+  --cover-glow: rgba(255, 255, 255, 0.2);
+}
+
+.cover-art--uh-body,
+.cover-art--not-for-us {
+  --cover-base: #07070a;
+  --cover-glow: rgba(210, 210, 220, 0.18);
+}
+
+.cover-art--wow-wow {
+  --cover-base: #050507;
+  --cover-glow: rgba(237, 229, 246, 0.22);
+}
+
 .releases-stage {
   min-height: 270vh;
 }
@@ -445,18 +580,19 @@ a {
 
 .reel-track {
   display: flex;
-  gap: 18px;
+  gap: 10px;
   width: max-content;
   will-change: transform;
 }
 
 .reel-card {
-  width: min(36vw, 380px);
-  min-width: 310px;
+  position: relative;
+  width: min(30vw, 320px);
+  min-width: 280px;
   min-height: 58vh;
   display: grid;
-  align-content: end;
-  gap: 14px;
+  align-content: start;
+  gap: 12px;
   padding: 28px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
@@ -466,6 +602,14 @@ a {
   box-shadow: var(--shadow);
   backdrop-filter: blur(20px);
   will-change: transform, opacity;
+}
+
+.reel-card + .reel-card {
+  margin-left: -26px;
+}
+
+.reel-card__cover {
+  width: 100%;
 }
 
 .ticker {
@@ -571,6 +715,11 @@ a {
 
   .artist-panel {
     position: relative;
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "index"
+      "cover"
+      "body";
     transform: none !important;
     opacity: 1 !important;
   }
@@ -589,6 +738,7 @@ a {
     overflow-x: auto;
     padding-bottom: 10px;
     scroll-snap-type: x proximity;
+    gap: 14px;
   }
 
   .reel-card {
@@ -597,6 +747,10 @@ a {
     scroll-snap-align: start;
     transform: none !important;
     opacity: 1 !important;
+  }
+
+  .reel-card + .reel-card {
+    margin-left: 0;
   }
 }
 
@@ -636,6 +790,14 @@ a {
   .artist-panel,
   .reel-card {
     padding: 22px;
+  }
+
+  .cover-art {
+    padding: 16px;
+  }
+
+  .cover-art strong {
+    font-size: clamp(1.9rem, 9vw, 3rem);
   }
 
   .ticker__track {

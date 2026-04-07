@@ -6,7 +6,7 @@
     <title>Moznho Sound</title>
     <meta
       name="description"
-      content="Moznho Sound — чёрно-белый анимированный сайт лейбла из Новороссийска."
+      content="Moznho Sound — черно-белый анимированный сайт лейбла из Новороссийска."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -14,7 +14,7 @@
       href="https://fonts.googleapis.com/css2?family=Anton&family=Manrope:wght@400;500;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="./styles.css?v=20260407-4" />
+    <link rel="stylesheet" href="./styles.css?v=20260407-5" />
     <script>
       if ("scrollRestoration" in history) {
         history.scrollRestoration = "manual";
@@ -26,7 +26,9 @@
     </script>
   </head>
   <body>
-    <div class="bg-shader" aria-hidden="true"></div>
+    <div class="bg-shader" aria-hidden="true">
+      <canvas class="bg-shader__canvas" data-shader-canvas></canvas>
+    </div>
     <div class="bg-wave bg-wave--one" aria-hidden="true"></div>
     <div class="bg-wave bg-wave--two" aria-hidden="true"></div>
     <div class="bg-grid" aria-hidden="true"></div>
@@ -63,10 +65,7 @@
           </div>
 
           <div class="hero-stage__copy reveal" data-reveal>
-            <p>
-              Логотип стоит в центре как сцена. При скролле он раскрывается и
-              выпускает артистов наружу.
-            </p>
+            <p>Логотип стоит в центре как сцена. При скролле он раскрывается и выпускает артистов наружу.</p>
           </div>
         </div>
       </section>
@@ -77,55 +76,74 @@
             <span class="section-label">artists</span>
             <h2>Ключевые имена.</h2>
             <p>
-              Не мелкий список ссылок, а отдельная сцена. Каждое имя выходит
-              как самостоятельный блок.
+              Не мелкий список ссылок, а отдельная сцена. Карточки артистов собираются в плотный стек и сразу
+              показывают обложки как часть roster.
             </p>
           </div>
 
           <div class="roster-stage__stack">
-            <article class="artist-panel" data-artist-panel>
+            <article class="artist-panel artist-panel--double-g" data-artist-panel>
               <span class="artist-panel__index">01</span>
-              <h3>DOUBLE G</h3>
-              <p>
-                Центральное имя в текущем срезе релизов: <span>GYB</span>,
-                <span>not for us</span>, <span>WOW WOW</span>.
-              </p>
-              <a
-                href="https://music.yandex.ru/album/33363496/track/131308956"
-                target="_blank"
-                rel="noreferrer"
-                >Yandex Music</a
-              >
+              <div class="artist-panel__cover cover-art cover-art--double-g">
+                <span class="cover-art__eyebrow">moznho sound</span>
+                <strong>DOUBLE G</strong>
+                <small>GYB / WOW WOW</small>
+              </div>
+              <div class="artist-panel__body">
+                <h3>DOUBLE G</h3>
+                <p>
+                  Центральное имя в текущем срезе релизов: <span>GYB</span>, <span>not for us</span>,
+                  <span>WOW WOW</span>.
+                </p>
+                <a
+                  href="https://music.yandex.ru/album/33363496/track/131308956"
+                  target="_blank"
+                  rel="noreferrer"
+                  >Yandex Music</a
+                >
+              </div>
             </article>
 
-            <article class="artist-panel" data-artist-panel>
+            <article class="artist-panel artist-panel--yarou" data-artist-panel>
               <span class="artist-panel__index">02</span>
-              <h3>YAROU</h3>
-              <p>
-                Отдельный артист на <span>WONME</span> и часть общей связки в
-                <span>GYB</span>.
-              </p>
-              <a
-                href="https://music.amazon.com/albums/B0G4LMWNGK"
-                target="_blank"
-                rel="noreferrer"
-                >WONME</a
-              >
+              <div class="artist-panel__cover cover-art cover-art--yarou">
+                <span class="cover-art__eyebrow">single</span>
+                <strong>YAROU</strong>
+                <small>WONME / GYB</small>
+              </div>
+              <div class="artist-panel__body">
+                <h3>YAROU</h3>
+                <p>
+                  Отдельный артист на <span>WONME</span> и часть общей связки в <span>GYB</span>.
+                </p>
+                <a
+                  href="https://music.amazon.com/albums/B0G4LMWNGK"
+                  target="_blank"
+                  rel="noreferrer"
+                  >WONME</a
+                >
+              </div>
             </article>
 
-            <article class="artist-panel" data-artist-panel>
+            <article class="artist-panel artist-panel--uh-body" data-artist-panel>
               <span class="artist-panel__index">03</span>
-              <h3>UH! BODY</h3>
-              <p>
-                Повторяющееся имя рядом с Double G: сначала <span>GYB</span>,
-                потом <span>not for us</span>.
-              </p>
-              <a
-                href="https://music.apple.com/ru/album/not-for-us-single/1864128486"
-                target="_blank"
-                rel="noreferrer"
-                >not for us</a
-              >
+              <div class="artist-panel__cover cover-art cover-art--uh-body">
+                <span class="cover-art__eyebrow">roster</span>
+                <strong>UH! BODY</strong>
+                <small>GYB / NOT FOR US</small>
+              </div>
+              <div class="artist-panel__body">
+                <h3>UH! BODY</h3>
+                <p>
+                  Повторяющееся имя рядом с Double G: сначала <span>GYB</span>, потом <span>not for us</span>.
+                </p>
+                <a
+                  href="https://music.apple.com/ru/album/not-for-us-single/1864128486"
+                  target="_blank"
+                  rel="noreferrer"
+                  >not for us</a
+                >
+              </div>
             </article>
           </div>
         </div>
@@ -139,25 +157,45 @@
           </div>
 
           <div class="reel-track">
-            <article class="reel-card">
+            <article class="reel-card reel-card--gyb">
+              <div class="reel-card__cover cover-art cover-art--gyb">
+                <span class="cover-art__eyebrow">26 nov 2025</span>
+                <strong>GYB</strong>
+                <small>Double G / YAROU / UH! BODY</small>
+              </div>
               <span class="reel-card__date">26 nov 2025</span>
               <h3>GYB</h3>
               <p>Double G feat. YAROU &amp; UH! BODY</p>
             </article>
 
-            <article class="reel-card">
+            <article class="reel-card reel-card--wonme">
+              <div class="reel-card__cover cover-art cover-art--wonme">
+                <span class="cover-art__eyebrow">28 nov 2025</span>
+                <strong>WONME</strong>
+                <small>YAROU</small>
+              </div>
               <span class="reel-card__date">28 nov 2025</span>
               <h3>WONME</h3>
               <p>Yarou</p>
             </article>
 
-            <article class="reel-card">
+            <article class="reel-card reel-card--not-for-us">
+              <div class="reel-card__cover cover-art cover-art--not-for-us">
+                <span class="cover-art__eyebrow">26 dec 2025</span>
+                <strong>NOT FOR US</strong>
+                <small>Double G / UH! BODY</small>
+              </div>
               <span class="reel-card__date">26 dec 2025</span>
               <h3>not for us</h3>
               <p>Double G &amp; UH! BODY</p>
             </article>
 
-            <article class="reel-card">
+            <article class="reel-card reel-card--wow-wow">
+              <div class="reel-card__cover cover-art cover-art--wow-wow">
+                <span class="cover-art__eyebrow">16 jan 2026</span>
+                <strong>WOW WOW</strong>
+                <small>Double G</small>
+              </div>
               <span class="reel-card__date">16 jan 2026</span>
               <h3>WOW WOW</h3>
               <p>Double G</p>
@@ -182,6 +220,6 @@
       </section>
     </main>
 
-    <script src="./script.js?v=20260407-4"></script>
+    <script src="./script.js?v=20260407-5"></script>
   </body>
 </html>
