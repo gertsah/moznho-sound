@@ -23,6 +23,12 @@ const rosterStage = document.querySelector("[data-roster-stage]");
 const artistPanels = rosterStage
   ? [...rosterStage.querySelectorAll("[data-artist-panel]")]
   : [];
+const artistPanelParts = artistPanels.map((panel) => ({
+  panel,
+  indexLabel: panel.querySelector(".artist-panel__index"),
+  cover: panel.querySelector(".artist-panel__cover"),
+  body: panel.querySelector(".artist-panel__body")
+}));
 const reelSection = document.querySelector("[data-reel-section]");
 const reelTrack = reelSection?.querySelector(".reel-track");
 const reelCards = reelSection ? [...reelSection.querySelectorAll(".reel-card")] : [];
@@ -159,20 +165,56 @@ const updateHeroStage = () => {
 };
 
 const updateRosterStage = () => {
-  if (!rosterStage || !artistPanels.length || window.innerWidth <= 1080) return;
+  if (!rosterStage || !artistPanelParts.length) return;
+
+  if (window.innerWidth <= 1080) {
+    artistPanelParts.forEach(({ panel, indexLabel, cover, body }) => {
+      panel.style.transform = "";
+      panel.style.opacity = "";
+      panel.style.zIndex = "";
+
+      if (indexLabel) indexLabel.style.opacity = "";
+      if (cover) {
+        cover.style.opacity = "";
+        cover.style.transform = "";
+      }
+      if (body) {
+        body.style.opacity = "";
+        body.style.transform = "";
+      }
+    });
+    return;
+  }
 
   const progress = getStageProgress(rosterStage);
+  const focusPoint = progress * (artistPanelParts.length - 1);
 
-  artistPanels.forEach((panel, index) => {
-    const local = clamp(progress * 1.18 - index * 0.16, 0, 1);
-    const translateX = index * 18 - local * index * 10;
-    const translateY = 42 + index * 14 - local * 72;
-    const scale = 0.94 + local * 0.06;
-    const rotate = (index % 2 === 0 ? -1 : 1) * (1 - local) * 2.2;
+  artistPanelParts.forEach(({ panel, indexLabel, cover, body }, index) => {
+    const signedDistance = index - focusPoint;
+    const distance = Math.abs(signedDistance);
+    const local = clamp(1 - distance, 0, 1);
+    const translateX = snap(signedDistance * 82);
+    const translateY = snap(26 + distance * 76);
+    const scale = 0.88 + local * 0.12;
+    const rotate = signedDistance * 4.6;
 
     panel.style.transform = `translate3d(${translateX}px, ${translateY}px, 0) scale(${scale}) rotate(${rotate}deg)`;
-    panel.style.opacity = String(0.55 + local * 0.45);
-    panel.style.zIndex = String(Math.round(local * 100) + (artistPanels.length - index));
+    panel.style.opacity = String(0.2 + local * 0.8);
+    panel.style.zIndex = String(Math.round(local * 100) + (artistPanelParts.length - index));
+
+    if (indexLabel) {
+      indexLabel.style.opacity = String(0.18 + local * 0.82);
+    }
+
+    if (cover) {
+      cover.style.opacity = String(0.44 + local * 0.56);
+      cover.style.transform = `translate3d(0, ${snap((1 - local) * 10)}px, 0) scale(${0.9 + local * 0.1})`;
+    }
+
+    if (body) {
+      body.style.opacity = String(0.08 + local * 0.92);
+      body.style.transform = `translate3d(0, ${snap((1 - local) * 18)}px, 0)`;
+    }
   });
 };
 

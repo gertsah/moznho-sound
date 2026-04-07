@@ -339,6 +339,7 @@ main {
 .roster-stage__stack {
   position: relative;
   height: min(72vh, 760px);
+  perspective: 1400px;
 }
 
 .artist-panel {
@@ -355,10 +356,12 @@ main {
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03)),
-    rgba(0, 0, 0, 0.78);
-  box-shadow: var(--shadow);
-  backdrop-filter: blur(20px);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.015)),
+    rgba(7, 7, 9, 0.9);
+  box-shadow: 0 34px 92px rgba(0, 0, 0, 0.46);
+  backdrop-filter: blur(14px);
+  transform-origin: center top;
+  overflow: hidden;
   will-change: transform, opacity;
 }
 
@@ -372,6 +375,7 @@ main {
 
 .artist-panel__index {
   grid-area: index;
+  opacity: 0.32;
 }
 
 .artist-panel h3,
@@ -404,6 +408,8 @@ main {
 .artist-panel__cover {
   grid-area: cover;
   width: 100%;
+  opacity: 0.72;
+  will-change: transform, opacity;
 }
 
 .artist-panel__body {
@@ -411,6 +417,8 @@ main {
   display: grid;
   align-content: end;
   gap: 14px;
+  opacity: 0.22;
+  will-change: transform, opacity;
 }
 
 .cover-art {
