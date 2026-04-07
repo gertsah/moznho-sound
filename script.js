@@ -41,17 +41,34 @@ const setupLavaLamp = () => {
 
   const wrap01 = (value) => ((value % 1) + 1) % 1;
 
-  const configs = [
-    { startX: -0.18, spanX: 1.52, baseY: 0.06, spanY: 0.08, size: 0.2, offset: 0.02, phase: 0.3, speed: 0.046, swayX: 0.012, swayY: 0.018, lift: 0.016, scaleRange: 0.05, stretchRange: 0.08, rotateRange: 8 },
-    { startX: -0.24, spanX: 1.56, baseY: 0.12, spanY: 0.07, size: 0.16, offset: 0.38, phase: 1.2, speed: 0.051, swayX: 0.014, swayY: 0.016, lift: 0.014, scaleRange: 0.05, stretchRange: 0.08, rotateRange: 10 },
-    { startX: -0.22, spanX: 1.54, baseY: 0.2, spanY: 0.09, size: 0.18, offset: 0.7, phase: 2.1, speed: 0.048, swayX: 0.013, swayY: 0.018, lift: 0.014, scaleRange: 0.06, stretchRange: 0.09, rotateRange: 9 },
-    { startX: -0.16, spanX: 1.5, baseY: 0.34, spanY: -0.06, size: 0.17, offset: 0.12, phase: 2.9, speed: 0.043, swayX: 0.012, swayY: 0.014, lift: 0.012, scaleRange: 0.05, stretchRange: 0.08, rotateRange: 9 },
-    { startX: -0.22, spanX: 1.55, baseY: 0.42, spanY: -0.08, size: 0.15, offset: 0.52, phase: 3.7, speed: 0.05, swayX: 0.014, swayY: 0.018, lift: 0.013, scaleRange: 0.05, stretchRange: 0.09, rotateRange: 11 },
-    { startX: -0.2, spanX: 1.52, baseY: 0.5, spanY: -0.05, size: 0.19, offset: 0.86, phase: 4.2, speed: 0.045, swayX: 0.013, swayY: 0.016, lift: 0.015, scaleRange: 0.06, stretchRange: 0.08, rotateRange: 8 },
-    { startX: -0.18, spanX: 1.5, baseY: 0.66, spanY: 0.05, size: 0.18, offset: 0.18, phase: 4.9, speed: 0.047, swayX: 0.012, swayY: 0.016, lift: 0.014, scaleRange: 0.05, stretchRange: 0.08, rotateRange: 10 },
-    { startX: -0.22, spanX: 1.56, baseY: 0.76, spanY: 0.08, size: 0.16, offset: 0.46, phase: 5.3, speed: 0.053, swayX: 0.015, swayY: 0.018, lift: 0.015, scaleRange: 0.05, stretchRange: 0.09, rotateRange: 10 },
-    { startX: -0.2, spanX: 1.54, baseY: 0.88, spanY: 0.06, size: 0.2, offset: 0.78, phase: 6.1, speed: 0.044, swayX: 0.013, swayY: 0.015, lift: 0.015, scaleRange: 0.06, stretchRange: 0.09, rotateRange: 9 }
+  const ribbons = [
+    { baseY: -0.22, spanY: 0.22, size: 0.12, speed: 0.03, swayX: 0.006, swayY: 0.008, phase: 0.2 },
+    { baseY: 0.02, spanY: 0.2, size: 0.1, speed: 0.032, swayX: 0.006, swayY: 0.007, phase: 1.0 },
+    { baseY: 0.26, spanY: 0.19, size: 0.11, speed: 0.031, swayX: 0.007, swayY: 0.008, phase: 1.8 },
+    { baseY: 0.5, spanY: 0.18, size: 0.1, speed: 0.033, swayX: 0.006, swayY: 0.007, phase: 2.6 },
+    { baseY: 0.74, spanY: 0.17, size: 0.12, speed: 0.03, swayX: 0.007, swayY: 0.008, phase: 3.4 },
+    { baseY: 0.96, spanY: 0.18, size: 0.11, speed: 0.032, swayX: 0.006, swayY: 0.007, phase: 4.2 }
   ];
+
+  const configs = ribbons.flatMap((ribbon, ribbonIndex) =>
+    Array.from({ length: 6 }, (_, index) => {
+      const variance = 1 + ((index % 3) - 1) * 0.08;
+
+      return {
+        startX: -0.24,
+        spanX: 1.58,
+        baseY: ribbon.baseY,
+        spanY: ribbon.spanY,
+        size: ribbon.size * variance,
+        offset: ribbonIndex * 0.08 + index / 6,
+        phase: ribbon.phase + index * 0.55,
+        speed: ribbon.speed + index * 0.0007,
+        swayX: ribbon.swayX,
+        swayY: ribbon.swayY,
+        pulseRange: 0.035 + index * 0.002
+      };
+    })
+  );
 
   lavaLayer.replaceChildren();
 
@@ -73,23 +90,16 @@ const setupLavaLamp = () => {
     blobs.forEach((blob) => {
       const size = minSide * blob.size;
       const flow = wrap01(t * blob.speed + blob.offset);
-      const ribbon = Math.sin(flow * Math.PI * 2 + blob.phase);
-      const sweep = Math.cos(t * (blob.speed * 7.4) + blob.phase * 1.3);
-      const pulse = Math.sin(t * (blob.speed * 6.1) + blob.phase * 0.8);
-      const scale = 0.97 + pulse * blob.scaleRange;
-      const stretch = Math.cos(t * (blob.speed * 8.2) + blob.phase * 1.5) * blob.stretchRange;
-      const scaleX = scale + stretch;
-      const scaleY = scale - stretch * 0.72;
-      const rotation = Math.sin(t * (blob.speed * 5.6) + blob.phase) * blob.rotateRange;
-      const x = width * (blob.startX + flow * blob.spanX) + sweep * width * blob.swayX;
-      const y =
-        height * (blob.baseY + flow * blob.spanY) +
-        ribbon * height * blob.swayY +
-        pulse * height * blob.lift;
+      const sway = Math.sin(t * (blob.speed * 8.8) + blob.phase);
+      const bob = Math.cos(t * (blob.speed * 7.4) + blob.phase * 1.1);
+      const pulse = Math.sin(t * (blob.speed * 9.2) + blob.phase * 0.9) * blob.pulseRange;
+      const x = width * (blob.startX + flow * blob.spanX) + sway * width * blob.swayX;
+      const y = height * (blob.baseY + flow * blob.spanY) + bob * height * blob.swayY;
+      const scale = 0.98 + pulse;
 
       blob.node.style.width = `${size}px`;
       blob.node.style.height = `${size}px`;
-      blob.node.style.transform = `translate3d(${x - size / 2}px, ${y - size / 2}px, 0) rotate(${rotation}deg) scale(${scaleX}, ${scaleY})`;
+      blob.node.style.transform = `translate3d(${x - size / 2}px, ${y - size / 2}px, 0) scale(${scale})`;
     });
   };
 
