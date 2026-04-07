@@ -381,6 +381,27 @@ main {
   transform-origin: center top;
   overflow: hidden;
   will-change: transform, opacity;
+  transition:
+    box-shadow 240ms ease,
+    border-color 240ms ease,
+    background 240ms ease;
+}
+
+.artist-panel.is-draggable {
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+}
+
+.artist-panel.is-draggable:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 42px 118px rgba(0, 0, 0, 0.5);
+}
+
+.artist-panel.is-dragging {
+  cursor: grabbing;
+  border-color: rgba(255, 255, 255, 0.22);
+  box-shadow: 0 64px 140px rgba(0, 0, 0, 0.56);
 }
 
 .artist-panel__index,
@@ -428,6 +449,7 @@ main {
   width: 100%;
   opacity: 0.84;
   will-change: transform, opacity;
+  transition: filter 240ms ease;
 }
 
 .artist-panel__body {
@@ -437,6 +459,10 @@ main {
   gap: 12px;
   opacity: 1;
   will-change: transform, opacity;
+}
+
+.artist-panel.is-dragging .artist-panel__cover {
+  filter: saturate(1.08) contrast(1.04);
 }
 
 .cover-art {

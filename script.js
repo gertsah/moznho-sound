@@ -36,6 +36,23 @@ const reelCards = reelSection ? [...reelSection.querySelectorAll(".reel-card")] 
 const backgroundCanvas = document.querySelector("[data-bg-canvas]");
 const cursorOrb = document.querySelector("[data-cursor-orb]");
 const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+const finePointerQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
+const easeOutCubic = (value) => 1 - Math.pow(1 - value, 3);
+const rosterPanelStates = artistPanelParts.map((parts, index) => ({
+  ...parts,
+  index,
+  dragPointerId: null,
+  dragging: false,
+  suppressClick: false,
+  dragStartX: 0,
+  dragStartY: 0,
+  dragTargetX: 0,
+  dragTargetY: 0,
+  dragTargetRotate: 0,
+  dragX: 0,
+  dragY: 0,
+  dragRotate: 0
+}));
 
 const setupAntigravityBackground = () => {
   if (!(backgroundCanvas instanceof HTMLCanvasElement)) return () => {};
@@ -61,7 +78,6 @@ const setupAntigravityBackground = () => {
   let dpr = 1;
   let frameId = 0;
   let pointerActive = false;
-  const finePointerQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
 
   const setCanvasSize = () => {
     dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -233,6 +249,107 @@ const setupAntigravityBackground = () => {
 
 const cleanupBackground = setupAntigravityBackground();
 
+const setupRosterInteractions = () => {
+  if (!rosterPanelStates.length) return () => {};
+
+  const canInteract = () => window.innerWidth > 1080 && finePointerQuery.matches;
+
+  const releaseState = (state) => {
+    state.dragging = false;
+    state.dragPointerId = null;
+    state.dragTargetX = 0;
+    state.dragTargetY = 0;
+    state.dragTargetRotate = 0;
+    state.panel.classList.remove("is-dragging");
+    requestFrame();
+  };
+
+  const cleanupFns = rosterPanelStates.map((state) => {
+    const handlePointerDown = (event) => {
+      if (!canInteract()) return;
+      if (event.button !== 0) return;
+
+      state.dragging = true;
+      state.dragPointerId = event.pointerId;
+      state.suppressClick = false;
+      state.dragStartX = event.clientX - state.dragTargetX;
+      state.dragStartY = event.clientY - state.dragTargetY;
+      state.panel.classList.add("is-dragging");
+      state.panel.setPointerCapture(event.pointerId);
+      requestFrame();
+    };
+
+    const handlePointerMove = (event) => {
+      if (!state.dragging || state.dragPointerId !== event.pointerId) return;
+
+      const nextX = clamp(event.clientX - state.dragStartX, -220, 220);
+      const nextY = clamp(event.clientY - state.dragStartY, -180, 180);
+
+      if (Math.abs(nextX) > 6 || Math.abs(nextY) > 6) {
+        state.suppressClick = true;
+      }
+
+      state.dragTargetX = nextX;
+      state.dragTargetY = nextY;
+      state.dragTargetRotate = clamp(nextX * 0.06, -10, 10);
+      requestFrame();
+    };
+
+    const handlePointerUp = (event) => {
+      if (state.dragPointerId !== event.pointerId) return;
+      releaseState(state);
+    };
+
+    const handlePointerCancel = (event) => {
+      if (state.dragPointerId !== event.pointerId) return;
+      releaseState(state);
+    };
+
+    const handleClickCapture = (event) => {
+      if (!state.suppressClick) return;
+      event.preventDefault();
+      event.stopPropagation();
+      state.suppressClick = false;
+    };
+
+    state.panel.classList.add("is-draggable");
+    state.panel.addEventListener("pointerdown", handlePointerDown);
+    state.panel.addEventListener("pointermove", handlePointerMove);
+    state.panel.addEventListener("pointerup", handlePointerUp);
+    state.panel.addEventListener("pointercancel", handlePointerCancel);
+    state.panel.addEventListener("lostpointercapture", handlePointerCancel);
+    state.panel.addEventListener("click", handleClickCapture, true);
+
+    return () => {
+      state.panel.classList.remove("is-draggable", "is-dragging");
+      state.panel.removeEventListener("pointerdown", handlePointerDown);
+      state.panel.removeEventListener("pointermove", handlePointerMove);
+      state.panel.removeEventListener("pointerup", handlePointerUp);
+      state.panel.removeEventListener("pointercancel", handlePointerCancel);
+      state.panel.removeEventListener("lostpointercapture", handlePointerCancel);
+      state.panel.removeEventListener("click", handleClickCapture, true);
+    };
+  });
+
+  const handleResizeLike = () => {
+    if (canInteract()) return;
+    rosterPanelStates.forEach((state) => releaseState(state));
+  };
+
+  window.addEventListener("blur", handleResizeLike);
+  window.addEventListener("resize", handleResizeLike);
+  finePointerQuery.addEventListener("change", handleResizeLike);
+
+  return () => {
+    cleanupFns.forEach((cleanup) => cleanup());
+    window.removeEventListener("blur", handleResizeLike);
+    window.removeEventListener("resize", handleResizeLike);
+    finePointerQuery.removeEventListener("change", handleResizeLike);
+  };
+};
+
+const cleanupRosterInteractions = setupRosterInteractions();
+
 const revealObserver = new IntersectionObserver(
   (entries) => {
     entries.forEach((entry) => {
@@ -278,13 +395,16 @@ const updateHeroStage = () => {
 };
 
 const updateRosterStage = () => {
-  if (!rosterStage || !rosterStack || !artistPanelParts.length) return;
+  if (!rosterStage || !rosterStack || !rosterPanelStates.length) return false;
 
   if (window.innerWidth <= 1080) {
-    artistPanelParts.forEach(({ panel, indexLabel, cover, body }) => {
+    rosterPanelStates.forEach((state) => {
+      const { panel, indexLabel, cover, body } = state;
       panel.style.transform = "";
       panel.style.opacity = "";
       panel.style.zIndex = "";
+      panel.style.width = "";
+      panel.classList.remove("is-ready");
 
       if (indexLabel) indexLabel.style.opacity = "";
       if (cover) {
@@ -296,11 +416,12 @@ const updateRosterStage = () => {
         body.style.transform = "";
       }
     });
-    return;
+    return false;
   }
 
   const progress = getStageProgress(rosterStage);
-  const wave = progress * Math.PI * 2.6;
+  const time = performance.now() * 0.001;
+  let needsAnotherFrame = false;
   const stackWidth = rosterStack.clientWidth;
   const panelWidth = Math.min(stackWidth * 0.315, 360);
   const remaining = Math.max(stackWidth - panelWidth * 3, 48);
@@ -311,35 +432,69 @@ const updateRosterStage = () => {
     { x: panelWidth * 2 + gap * 2, y: 98, rotate: 7, scale: 0.92, prominence: 0.9, phase: 2.9, z: 3 }
   ];
 
-  artistPanelParts.forEach(({ panel, indexLabel, cover, body }, index) => {
+  rosterPanelStates.forEach((state, index) => {
+    const { panel, indexLabel, cover, body } = state;
     const layout = layouts[index] ?? layouts[layouts.length - 1];
-    const driftX = Math.cos(wave + layout.phase) * 12;
-    const driftY = Math.sin(wave * 1.12 + layout.phase) * 18;
-    const scale = layout.scale + Math.sin(wave * 0.82 + layout.phase) * 0.02;
-    const rotate = layout.rotate + Math.sin(wave + layout.phase) * 1.6;
-    const coverLift = Math.sin(wave * 1.3 + layout.phase) * 6;
-    const bodyLift = Math.cos(wave * 1.1 + layout.phase) * 8;
+    const introStart = 0.08 + index * 0.08;
+    const introEnd = introStart + 0.26;
+    const intro = reducedMotionQuery.matches
+      ? 1
+      : easeOutCubic(clamp((progress - introStart) / (introEnd - introStart), 0, 1));
+    const floatX = Math.cos(time * 1.1 + layout.phase) * 8;
+    const floatY = Math.sin(time * 1.24 + layout.phase) * 12;
+    const floatRotate = Math.sin(time * 0.9 + layout.phase) * 1.4;
+    const finalX = layout.x + floatX;
+    const finalY = layout.y + floatY;
+    const finalScale = layout.scale + Math.sin(time * 0.84 + layout.phase) * 0.012;
+    const finalRotate = layout.rotate + floatRotate;
+    const startX = finalX + (index === 1 ? 0 : index === 0 ? -180 : 180);
+    const startY = finalY + 180 + index * 16;
+    const startScale = 0.78;
+    const startRotate = finalRotate + (index === 1 ? -8 : index === 0 ? -16 : 16);
+    const x = startX + (finalX - startX) * intro;
+    const y = startY + (finalY - startY) * intro;
+    const scale = startScale + (finalScale - startScale) * intro;
+    const rotate = startRotate + (finalRotate - startRotate) * intro;
     const prominence = layout.prominence;
+    const lift = state.dragging ? 34 : Math.abs(state.dragY) * 0.06 + Math.abs(state.dragX) * 0.025;
+
+    state.dragX += (state.dragTargetX - state.dragX) * (state.dragging ? 0.28 : 0.12);
+    state.dragY += (state.dragTargetY - state.dragY) * (state.dragging ? 0.28 : 0.12);
+    state.dragRotate += (state.dragTargetRotate - state.dragRotate) * (state.dragging ? 0.24 : 0.1);
+
+    if (
+      state.dragging ||
+      Math.abs(state.dragX - state.dragTargetX) > 0.2 ||
+      Math.abs(state.dragY - state.dragTargetY) > 0.2 ||
+      Math.abs(state.dragRotate - state.dragTargetRotate) > 0.08
+    ) {
+      needsAnotherFrame = true;
+    }
 
     panel.style.width = `${panelWidth}px`;
-    panel.style.transform = `translate3d(${snap(layout.x + driftX)}px, ${snap(layout.y + driftY)}px, 0) scale(${scale}) rotate(${rotate}deg)`;
-    panel.style.opacity = "1";
-    panel.style.zIndex = String(layout.z);
+    panel.style.transform = `translate3d(${snap(x + state.dragX)}px, ${snap(y + state.dragY - lift)}px, ${state.dragging ? 84 : 0}px) scale(${scale + (state.dragging ? 0.03 : 0)}) rotate(${rotate + state.dragRotate}deg)`;
+    panel.style.opacity = String(0.2 + intro * 0.8);
+    panel.style.zIndex = String(layout.z + (state.dragging ? 10 : 0));
+    panel.classList.toggle("is-ready", intro > 0.98);
 
     if (indexLabel) {
-      indexLabel.style.opacity = String(0.34 + prominence * 0.66);
+      indexLabel.style.opacity = String((0.1 + prominence * 0.62) * intro);
     }
 
     if (cover) {
-      cover.style.opacity = String(0.64 + prominence * 0.36);
-      cover.style.transform = `translate3d(0, ${snap(coverLift)}px, 0) scale(${0.92 + prominence * 0.08})`;
+      const coverLift = (1 - intro) * 44 + Math.sin(time * 1.3 + layout.phase) * 6;
+      cover.style.opacity = String((0.2 + prominence * 0.8) * intro);
+      cover.style.transform = `translate3d(0, ${snap(coverLift)}px, 0) scale(${0.88 + prominence * 0.12 * intro})`;
     }
 
     if (body) {
-      body.style.opacity = String(0.42 + prominence * 0.58);
+      const bodyLift = (1 - intro) * 54 + Math.cos(time * 1.08 + layout.phase) * 8;
+      body.style.opacity = String((0.16 + prominence * 0.84) * intro);
       body.style.transform = `translate3d(0, ${snap(bodyLift)}px, 0)`;
     }
   });
+
+  return needsAnotherFrame;
 };
 
 const updateReel = () => {
@@ -364,9 +519,13 @@ let ticking = false;
 
 const updateMotion = () => {
   updateHeroStage();
-  updateRosterStage();
+  const rosterNeedsFrame = updateRosterStage();
   updateReel();
   ticking = false;
+
+  if (rosterNeedsFrame) {
+    requestFrame();
+  }
 };
 
 const requestFrame = () => {
@@ -385,7 +544,8 @@ window.addEventListener("pageshow", () => {
 });
 
 window.addEventListener("beforeunload", () => {
-  cleanupLavaLamp();
+  cleanupBackground();
+  cleanupRosterInteractions();
 });
 
 updateMotion();
