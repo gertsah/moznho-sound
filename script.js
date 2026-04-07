@@ -193,27 +193,28 @@ const updateRosterStage = () => {
     const signedDistance = index - focusPoint;
     const distance = Math.abs(signedDistance);
     const local = clamp(1 - distance, 0, 1);
-    const translateX = snap(signedDistance * 82);
-    const translateY = snap(26 + distance * 76);
-    const scale = 0.88 + local * 0.12;
-    const rotate = signedDistance * 4.6;
+    const translateX = snap(signedDistance * 208);
+    const translateY = snap(10 + distance * 104);
+    const scale = 0.76 + local * 0.24;
+    const rotate = signedDistance * 7.5;
+    const bodyLocal = clamp((local - 0.58) / 0.42, 0, 1);
 
     panel.style.transform = `translate3d(${translateX}px, ${translateY}px, 0) scale(${scale}) rotate(${rotate}deg)`;
-    panel.style.opacity = String(0.2 + local * 0.8);
+    panel.style.opacity = String(0.14 + local * 0.86);
     panel.style.zIndex = String(Math.round(local * 100) + (artistPanelParts.length - index));
 
     if (indexLabel) {
-      indexLabel.style.opacity = String(0.18 + local * 0.82);
+      indexLabel.style.opacity = String(0.08 + local * 0.92);
     }
 
     if (cover) {
-      cover.style.opacity = String(0.44 + local * 0.56);
-      cover.style.transform = `translate3d(0, ${snap((1 - local) * 10)}px, 0) scale(${0.9 + local * 0.1})`;
+      cover.style.opacity = String(0.26 + local * 0.74);
+      cover.style.transform = `translate3d(0, ${snap((1 - local) * 18)}px, 0) scale(${0.84 + local * 0.16})`;
     }
 
     if (body) {
-      body.style.opacity = String(0.08 + local * 0.92);
-      body.style.transform = `translate3d(0, ${snap((1 - local) * 18)}px, 0)`;
+      body.style.opacity = String(bodyLocal);
+      body.style.transform = `translate3d(0, ${snap((1 - bodyLocal) * 30)}px, 0)`;
     }
   });
 };
