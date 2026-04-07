@@ -77,6 +77,34 @@ a {
   display: block;
 }
 
+.cursor-orb {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 80;
+  width: 28px;
+  height: 28px;
+  border: 1.5px solid rgba(17, 17, 21, 0.58);
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate3d(-50%, -50%, 0) scale(0.82);
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease,
+    border-color 180ms ease,
+    background-color 180ms ease;
+  background: rgba(255, 255, 255, 0.08);
+  mix-blend-mode: multiply;
+}
+
+body.has-custom-cursor,
+body.has-custom-cursor a,
+body.has-custom-cursor button,
+body.has-custom-cursor [role="button"] {
+  cursor: none;
+}
+
 main {
   position: relative;
   z-index: 4;
@@ -713,6 +741,19 @@ main {
 
   .ticker__track {
     gap: 24px;
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .cursor-orb {
+    display: none;
+  }
+
+  body.has-custom-cursor,
+  body.has-custom-cursor a,
+  body.has-custom-cursor button,
+  body.has-custom-cursor [role="button"] {
+    cursor: auto;
   }
 }
 

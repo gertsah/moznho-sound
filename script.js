@@ -34,6 +34,7 @@ const reelSection = document.querySelector("[data-reel-section]");
 const reelTrack = reelSection?.querySelector(".reel-track");
 const reelCards = reelSection ? [...reelSection.querySelectorAll(".reel-card")] : [];
 const backgroundCanvas = document.querySelector("[data-bg-canvas]");
+const cursorOrb = document.querySelector("[data-cursor-orb]");
 const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 
 const setupAntigravityBackground = () => {
@@ -42,168 +43,139 @@ const setupAntigravityBackground = () => {
   const context = backgroundCanvas.getContext("2d");
   if (!context) return () => {};
 
-  const TAU = Math.PI * 2;
   const config = {
-    density: 200,
-    particlesScale: 0.75,
-    ringWidth: 0.15,
-    ringWidth2: 0.05,
-    ringDisplacement: 0.15
+    spacing: 58,
+    flow: 5.5,
+    cursorRadius: 126,
+    cursorForce: 22,
+    cursorSwirl: 9
   };
-  const palette = ["#ffcf03", "#ff9d1f", "#f84242", "#8a56d8", "#2c64ed"];
-  const emitters = [
-    { x: 0.57, y: 0.34, radiusStart: 0.03, radiusStep: 0.031, rings: 10, countStart: 8, countStep: 5, driftX: 0.004, driftY: 0.004, spin: 0.042, phase: 0.2, intensity: 1, paletteShift: 0.08 },
-    { x: 0.3, y: 0.79, radiusStart: 0.042, radiusStep: 0.034, rings: 11, countStart: 8, countStep: 5, driftX: 0.004, driftY: 0.004, spin: -0.038, phase: 1.4, intensity: 0.92, paletteShift: 0.22 },
-    { x: 0.83, y: 0.66, radiusStart: 0.038, radiusStep: 0.034, rings: 11, countStart: 8, countStep: 5, driftX: 0.004, driftY: 0.004, spin: 0.04, phase: 2.5, intensity: 0.96, paletteShift: 0.64 }
-  ];
-  const particles = emitters.flatMap((emitter, emitterIndex) =>
-    Array.from({ length: emitter.rings }, (_, ringIndex) => {
-      const ringRatio = ringIndex / Math.max(emitter.rings - 1, 1);
-      const radius = emitter.radiusStart + ringIndex * emitter.radiusStep;
-      const count = emitter.countStart + ringIndex * emitter.countStep;
-
-      return Array.from({ length: count }, (_, particleIndex) => ({
-        emitter,
-        emitterIndex,
-        ringRatio,
-        radius,
-        baseAngle: (particleIndex / count) * TAU + ringIndex * 0.045 + emitterIndex * 0.32,
-        colorOffset: (emitter.paletteShift + (particleIndex / count) * 0.12 + ringIndex * 0.02) % 1,
-        length: (2.8 + ringRatio * 6.5 + (particleIndex % 4) * 0.35) * config.particlesScale,
-        thickness: 0.9 + ringRatio * 1.55,
-        alpha: (0.16 + ringRatio * 0.54) * emitter.intensity,
-        phase: emitter.phase + particleIndex * 0.11 + ringIndex * 0.28
-      }));
-    }).flat()
-  );
-  const specks = Array.from({ length: 240 }, () => ({
-    x: Math.random(),
-    y: Math.random(),
-    size: 0.45 + Math.random() * 0.85,
-    alpha: 0.035 + Math.random() * 0.09
-  }));
+  const gridPoints = [];
   const pointerTarget = { x: 0.56, y: 0.46 };
   const pointer = { x: 0.56, y: 0.46 };
-  const ringTarget = { x: 0.56, y: 0.46 };
-  const ring = { x: 0.56, y: 0.46 };
+  const cursorTarget = { x: 0.56, y: 0.46 };
+  const cursorField = { x: 0.56, y: 0.46, radius: config.cursorRadius };
   let width = 0;
   let height = 0;
   let minSide = 0;
   let dpr = 1;
   let frameId = 0;
   let pointerActive = false;
-
-  const mixColor = (a, b, ratio) => {
-    const from = Number.parseInt(a.slice(1), 16);
-    const to = Number.parseInt(b.slice(1), 16);
-    const red = Math.round(((from >> 16) & 255) + (((to >> 16) & 255) - ((from >> 16) & 255)) * ratio);
-    const green = Math.round(((from >> 8) & 255) + (((to >> 8) & 255) - ((from >> 8) & 255)) * ratio);
-    const blue = Math.round((from & 255) + ((to & 255) - (from & 255)) * ratio);
-    return `rgb(${red} ${green} ${blue})`;
-  };
-
-  const samplePalette = (value) => {
-    const wrapped = ((value % 1) + 1) % 1;
-    const scaled = wrapped * palette.length;
-    const index = Math.floor(scaled) % palette.length;
-    const nextIndex = (index + 1) % palette.length;
-    return mixColor(palette[index], palette[nextIndex], scaled - index);
-  };
+  const finePointerQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
 
   const setCanvasSize = () => {
     dpr = Math.min(window.devicePixelRatio || 1, 2);
     width = window.innerWidth;
     height = window.innerHeight;
     minSide = Math.min(width, height);
+    config.spacing = clamp(Math.round(minSide * 0.053), 46, 66);
+    config.cursorRadius = clamp(minSide * 0.14, 96, 158);
+    config.cursorForce = clamp(minSide * 0.022, 14, 30);
+    config.cursorSwirl = clamp(minSide * 0.008, 5, 11);
     backgroundCanvas.width = Math.round(width * dpr);
     backgroundCanvas.height = Math.round(height * dpr);
     backgroundCanvas.style.width = `${width}px`;
     backgroundCanvas.style.height = `${height}px`;
     context.setTransform(dpr, 0, 0, dpr, 0, 0);
+    cursorField.radius = config.cursorRadius;
   };
 
-  const drawDash = (x, y, length, thickness, angle, color, alpha) => {
-    const radius = thickness / 2;
-    context.save();
-    context.translate(x, y);
-    context.rotate(angle);
+  const rebuildGrid = () => {
+    gridPoints.length = 0;
+    const spacingY = config.spacing * 0.88;
+    const cols = Math.ceil(width / config.spacing) + 4;
+    const rows = Math.ceil(height / spacingY) + 4;
+
+    for (let row = -2; row < rows; row += 1) {
+      const offsetX = row % 2 === 0 ? 0 : config.spacing * 0.5;
+
+      for (let col = -2; col < cols; col += 1) {
+        gridPoints.push({
+          baseX: col * config.spacing + offsetX,
+          baseY: row * spacingY,
+          phase: Math.random() * Math.PI * 2,
+          wobble: 0.7 + Math.random() * 0.6
+        });
+      }
+    }
+  };
+
+  const drawDot = (x, y, size, alpha) => {
     context.globalAlpha = alpha;
-    context.fillStyle = color;
+    context.fillStyle = "#111115";
     context.beginPath();
-    context.roundRect(-length / 2, -thickness / 2, length, thickness, radius);
+    context.arc(x, y, size, 0, Math.PI * 2);
     context.fill();
-    context.restore();
   };
 
-  const drawSpecks = () => {
-    specks.forEach((speck) => {
-      context.globalAlpha = speck.alpha;
-      context.fillStyle = "#111115";
-      context.fillRect(speck.x * width, speck.y * height, speck.size, speck.size);
-    });
+  const updateCursorOrb = () => {
+    if (!cursorOrb) return;
+
+    if (!finePointerQuery.matches) {
+      cursorOrb.style.opacity = "0";
+      document.body.classList.remove("has-custom-cursor");
+      return;
+    }
+
+    document.body.classList.add("has-custom-cursor");
+    cursorOrb.style.opacity = pointerActive ? "1" : "0.72";
+    cursorOrb.style.transform = `translate3d(${snap(pointer.x * width)}px, ${snap(pointer.y * height)}px, 0) translate3d(-50%, -50%, 0) scale(${pointerActive ? 1 : 0.88})`;
+    cursorOrb.style.width = `${snap(config.cursorRadius * 0.26)}px`;
+    cursorOrb.style.height = `${snap(config.cursorRadius * 0.26)}px`;
   };
 
   const render = (time = 0) => {
-    const t = time * 0.00022;
-    const idleTargetX = 0.56 + Math.sin(t * 0.66) * 0.055 + Math.cos(t * 0.21) * 0.03;
-    const idleTargetY = 0.46 + Math.cos(t * 0.52) * 0.05 + Math.sin(t * 0.27) * 0.026;
+    const t = time * 0.0008;
+    const idleTargetX = 0.54 + Math.sin(t * 0.55) * 0.045 + Math.cos(t * 0.18) * 0.022;
+    const idleTargetY = 0.48 + Math.cos(t * 0.44) * 0.038 + Math.sin(t * 0.24) * 0.02;
     const targetX = pointerActive ? pointerTarget.x : idleTargetX;
     const targetY = pointerActive ? pointerTarget.y : idleTargetY;
 
-    pointer.x += (targetX - pointer.x) * (pointerActive ? 0.12 : 0.028);
-    pointer.y += (targetY - pointer.y) * (pointerActive ? 0.12 : 0.028);
-    ringTarget.x = pointer.x;
-    ringTarget.y = pointer.y;
-    ring.x += (ringTarget.x - ring.x) * (pointerActive ? 0.085 : 0.02);
-    ring.y += (ringTarget.y - ring.y) * (pointerActive ? 0.085 : 0.02);
+    pointer.x += (targetX - pointer.x) * (pointerActive ? 0.14 : 0.05);
+    pointer.y += (targetY - pointer.y) * (pointerActive ? 0.14 : 0.05);
+    cursorTarget.x = pointer.x;
+    cursorTarget.y = pointer.y;
+    cursorField.x += (cursorTarget.x - cursorField.x) * (pointerActive ? 0.11 : 0.045);
+    cursorField.y += (cursorTarget.y - cursorField.y) * (pointerActive ? 0.11 : 0.045);
 
     context.clearRect(0, 0, width, height);
-    drawSpecks();
+    const cursorCenterX = cursorField.x * width;
+    const cursorCenterY = cursorField.y * height;
+    const cursorRadius = config.cursorRadius * (1 + Math.sin(t * 1.8) * 0.05);
 
-    const ringCenterX = ring.x * width;
-    const ringCenterY = ring.y * height;
-    const ringRadius = minSide * (0.175 + Math.sin(t * 1.02) * 0.03 + Math.cos(t * 3.02) * 0.02);
-    const primaryBand = minSide * config.ringWidth * 0.33;
-    const secondaryBand = minSide * config.ringWidth2 * 0.52;
-
-    particles.forEach((particle) => {
-      const { emitter } = particle;
-      const driftX =
-        Math.sin(t * 0.42 + particle.phase) * emitter.driftX +
-        Math.cos(t * 0.18 + particle.phase * 0.6) * emitter.driftX * 0.65;
-      const driftY =
-        Math.cos(t * 0.38 + particle.phase * 0.9) * emitter.driftY +
-        Math.sin(t * 0.16 + particle.phase * 0.7) * emitter.driftY * 0.65;
-      const centerX = (emitter.x + driftX) * width;
-      const centerY = (emitter.y + driftY) * height;
-      const angle = particle.baseAngle + t * emitter.spin;
-      const radius =
-        minSide *
-        particle.radius *
-        (1 + Math.sin(t * 1.1 + particle.phase) * config.ringWidth2 * 0.65);
-      const baseX = centerX + Math.cos(angle) * radius;
-      const baseY = centerY + Math.sin(angle) * radius;
-      const dx = baseX - ringCenterX;
-      const dy = baseY - ringCenterY;
+    gridPoints.forEach((point) => {
+      const flowX =
+        Math.sin(point.baseY * 0.008 + t * 0.92 + point.phase) * config.flow * point.wobble +
+        Math.cos(point.baseX * 0.0046 + t * 0.33 + point.phase) * 2.4;
+      const flowY =
+        Math.cos(point.baseX * 0.0074 + t * 0.85 + point.phase) * config.flow * 0.72 * point.wobble +
+        Math.sin(point.baseY * 0.0042 + t * 0.28 + point.phase) * 1.9;
+      const baseX = point.baseX + flowX;
+      const baseY = point.baseY + flowY;
+      const dx = baseX - cursorCenterX;
+      const dy = baseY - cursorCenterY;
       const dist = Math.hypot(dx, dy) || 1;
       const dirX = dx / dist;
       const dirY = dy / dist;
-      const band = Math.exp(-((dist - ringRadius) ** 2) / (2 * primaryBand * primaryBand));
-      const innerBand = Math.exp(-((dist - ringRadius * 0.58) ** 2) / (2 * secondaryBand * secondaryBand));
-      const displacement = (band * 0.9 + innerBand * 0.42) * minSide * config.ringDisplacement * (pointerActive ? 0.78 : 0.46);
-      const swirl = (band * 0.82 + innerBand * 0.28) * (pointerActive ? 26 : 12);
+      const field = Math.exp(-(dist * dist) / (2 * cursorRadius * cursorRadius));
+      const band = Math.exp(-((dist - cursorRadius * 0.58) ** 2) / (2 * (cursorRadius * 0.24) ** 2));
+      const displacement = field * config.cursorForce + band * config.cursorForce * 0.6;
+      const swirl = band * config.cursorSwirl * (pointerActive ? 1.2 : 0.8);
       const x = baseX + dirX * displacement - dirY * swirl;
       const y = baseY + dirY * displacement + dirX * swirl;
-      const tangentAngle = angle + Math.PI / 2 + band * 0.22;
-      const length = particle.length + Math.sin(t * 1.15 + particle.phase) * config.ringWidth * 2.8;
-      const thickness = particle.thickness + Math.cos(t * 1.1 + particle.phase) * config.ringWidth2 * 0.8;
-      const alpha = particle.alpha * (0.88 + Math.sin(t * 0.95 + particle.phase) * 0.12) * (1 + band * 0.45);
-      const color = samplePalette(particle.colorOffset + t * 0.015);
+      const size = 1.05 + point.wobble * 0.28 + field * 1.15 + band * 0.35;
+      const alpha = 0.2 + point.wobble * 0.08 + field * 0.34 + band * 0.08;
 
-      drawDash(x, y, length, thickness, tangentAngle, color, alpha);
+      drawDot(x, y, size, alpha);
     });
 
     context.globalAlpha = 1;
+    context.strokeStyle = "rgba(17, 17, 21, 0.32)";
+    context.lineWidth = 1.2;
+    context.beginPath();
+    context.arc(cursorCenterX, cursorCenterY, cursorRadius * 0.2, 0, Math.PI * 2);
+    context.stroke();
+    updateCursorOrb();
   };
 
   const animate = (time) => {
@@ -216,6 +188,7 @@ const setupAntigravityBackground = () => {
   const restart = () => {
     window.cancelAnimationFrame(frameId);
     setCanvasSize();
+    rebuildGrid();
     render(0);
     if (!reducedMotionQuery.matches) {
       frameId = window.requestAnimationFrame(animate);
@@ -237,11 +210,16 @@ const setupAntigravityBackground = () => {
     restart();
   };
 
+  const handlePointerQueryChange = () => {
+    updateCursorOrb();
+  };
+
   restart();
   window.addEventListener("resize", restart);
   window.addEventListener("pointermove", handlePointerMove);
   window.addEventListener("pointerleave", handlePointerLeave);
   reducedMotionQuery.addEventListener("change", handleMotionChange);
+  finePointerQuery.addEventListener("change", handlePointerQueryChange);
 
   return () => {
     window.cancelAnimationFrame(frameId);
@@ -249,6 +227,7 @@ const setupAntigravityBackground = () => {
     window.removeEventListener("pointermove", handlePointerMove);
     window.removeEventListener("pointerleave", handlePointerLeave);
     reducedMotionQuery.removeEventListener("change", handleMotionChange);
+    finePointerQuery.removeEventListener("change", handlePointerQueryChange);
   };
 };
 
