@@ -52,10 +52,9 @@ const setupAntigravityBackground = () => {
   };
   const palette = ["#ffcf03", "#ff9d1f", "#f84242", "#8a56d8", "#2c64ed"];
   const emitters = [
-    { x: 0.56, y: 0.42, radiusStart: 0.025, radiusStep: 0.037, rings: 12, countStart: 8, countStep: 6, driftX: 0.012, driftY: 0.01, spin: 0.085, pointerX: 0.018, pointerY: 0.018, phase: 0.2, intensity: 1 },
-    { x: 0.79, y: 0.26, radiusStart: 0.022, radiusStep: 0.035, rings: 10, countStart: 8, countStep: 5, driftX: 0.009, driftY: 0.008, spin: -0.078, pointerX: 0.014, pointerY: 0.015, phase: 1.2, intensity: 0.88 },
-    { x: 0.35, y: 0.78, radiusStart: 0.024, radiusStep: 0.038, rings: 11, countStart: 8, countStep: 6, driftX: 0.011, driftY: 0.009, spin: 0.072, pointerX: 0.015, pointerY: 0.016, phase: 2.1, intensity: 0.94 },
-    { x: 0.84, y: 0.82, radiusStart: 0.02, radiusStep: 0.036, rings: 9, countStart: 7, countStep: 5, driftX: 0.008, driftY: 0.008, spin: -0.068, pointerX: 0.012, pointerY: 0.014, phase: 3.1, intensity: 0.8 }
+    { x: 0.57, y: 0.34, radiusStart: 0.03, radiusStep: 0.031, rings: 10, countStart: 8, countStep: 5, driftX: 0.004, driftY: 0.004, spin: 0.042, phase: 0.2, intensity: 1, paletteShift: 0.08 },
+    { x: 0.3, y: 0.79, radiusStart: 0.042, radiusStep: 0.034, rings: 11, countStart: 8, countStep: 5, driftX: 0.004, driftY: 0.004, spin: -0.038, phase: 1.4, intensity: 0.92, paletteShift: 0.22 },
+    { x: 0.83, y: 0.66, radiusStart: 0.038, radiusStep: 0.034, rings: 11, countStart: 8, countStep: 5, driftX: 0.004, driftY: 0.004, spin: 0.04, phase: 2.5, intensity: 0.96, paletteShift: 0.64 }
   ];
   const particles = emitters.flatMap((emitter, emitterIndex) =>
     Array.from({ length: emitter.rings }, (_, ringIndex) => {
@@ -69,7 +68,7 @@ const setupAntigravityBackground = () => {
         ringRatio,
         radius,
         baseAngle: (particleIndex / count) * TAU + ringIndex * 0.045 + emitterIndex * 0.32,
-        colorOffset: ((particleIndex / count) + ringIndex * 0.065 + emitterIndex * 0.18) % 1,
+        colorOffset: (emitter.paletteShift + (particleIndex / count) * 0.12 + ringIndex * 0.02) % 1,
         length: (2.8 + ringRatio * 6.5 + (particleIndex % 4) * 0.35) * config.particlesScale,
         thickness: 0.9 + ringRatio * 1.55,
         alpha: (0.16 + ringRatio * 0.54) * emitter.intensity,
@@ -83,13 +82,16 @@ const setupAntigravityBackground = () => {
     size: 0.45 + Math.random() * 0.85,
     alpha: 0.035 + Math.random() * 0.09
   }));
-  const pointerTarget = { x: 0, y: 0 };
-  const pointer = { x: 0, y: 0 };
+  const pointerTarget = { x: 0.56, y: 0.46 };
+  const pointer = { x: 0.56, y: 0.46 };
+  const ringTarget = { x: 0.56, y: 0.46 };
+  const ring = { x: 0.56, y: 0.46 };
   let width = 0;
   let height = 0;
   let minSide = 0;
   let dpr = 1;
   let frameId = 0;
+  let pointerActive = false;
 
   const mixColor = (a, b, ratio) => {
     const from = Number.parseInt(a.slice(1), 16);
@@ -142,36 +144,60 @@ const setupAntigravityBackground = () => {
   };
 
   const render = (time = 0) => {
-    const t = time * 0.00024;
-    pointer.x += (pointerTarget.x - pointer.x) * 0.05;
-    pointer.y += (pointerTarget.y - pointer.y) * 0.05;
+    const t = time * 0.00022;
+    const idleTargetX = 0.56 + Math.sin(t * 0.66) * 0.055 + Math.cos(t * 0.21) * 0.03;
+    const idleTargetY = 0.46 + Math.cos(t * 0.52) * 0.05 + Math.sin(t * 0.27) * 0.026;
+    const targetX = pointerActive ? pointerTarget.x : idleTargetX;
+    const targetY = pointerActive ? pointerTarget.y : idleTargetY;
+
+    pointer.x += (targetX - pointer.x) * (pointerActive ? 0.12 : 0.028);
+    pointer.y += (targetY - pointer.y) * (pointerActive ? 0.12 : 0.028);
+    ringTarget.x = pointer.x;
+    ringTarget.y = pointer.y;
+    ring.x += (ringTarget.x - ring.x) * (pointerActive ? 0.085 : 0.02);
+    ring.y += (ringTarget.y - ring.y) * (pointerActive ? 0.085 : 0.02);
 
     context.clearRect(0, 0, width, height);
     drawSpecks();
 
+    const ringCenterX = ring.x * width;
+    const ringCenterY = ring.y * height;
+    const ringRadius = minSide * (0.175 + Math.sin(t * 1.02) * 0.03 + Math.cos(t * 3.02) * 0.02);
+    const primaryBand = minSide * config.ringWidth * 0.33;
+    const secondaryBand = minSide * config.ringWidth2 * 0.52;
+
     particles.forEach((particle) => {
       const { emitter } = particle;
       const driftX =
-        Math.sin(t * 0.55 + particle.phase) * emitter.driftX +
-        Math.cos(t * 0.23 + particle.phase * 0.6) * config.ringDisplacement * 0.012 +
-        pointer.x * emitter.pointerX;
+        Math.sin(t * 0.42 + particle.phase) * emitter.driftX +
+        Math.cos(t * 0.18 + particle.phase * 0.6) * emitter.driftX * 0.65;
       const driftY =
-        Math.cos(t * 0.48 + particle.phase * 0.9) * emitter.driftY +
-        Math.sin(t * 0.2 + particle.phase * 0.7) * config.ringDisplacement * 0.009 +
-        pointer.y * emitter.pointerY;
+        Math.cos(t * 0.38 + particle.phase * 0.9) * emitter.driftY +
+        Math.sin(t * 0.16 + particle.phase * 0.7) * emitter.driftY * 0.65;
       const centerX = (emitter.x + driftX) * width;
       const centerY = (emitter.y + driftY) * height;
       const angle = particle.baseAngle + t * emitter.spin;
       const radius =
         minSide *
         particle.radius *
-        (1 + Math.sin(t * 1.2 + particle.phase) * config.ringWidth2 * 0.8);
-      const x = centerX + Math.cos(angle) * radius;
-      const y = centerY + Math.sin(angle) * radius;
-      const tangentAngle = angle + Math.PI / 2;
+        (1 + Math.sin(t * 1.1 + particle.phase) * config.ringWidth2 * 0.65);
+      const baseX = centerX + Math.cos(angle) * radius;
+      const baseY = centerY + Math.sin(angle) * radius;
+      const dx = baseX - ringCenterX;
+      const dy = baseY - ringCenterY;
+      const dist = Math.hypot(dx, dy) || 1;
+      const dirX = dx / dist;
+      const dirY = dy / dist;
+      const band = Math.exp(-((dist - ringRadius) ** 2) / (2 * primaryBand * primaryBand));
+      const innerBand = Math.exp(-((dist - ringRadius * 0.58) ** 2) / (2 * secondaryBand * secondaryBand));
+      const displacement = (band * 0.9 + innerBand * 0.42) * minSide * config.ringDisplacement * (pointerActive ? 0.78 : 0.46);
+      const swirl = (band * 0.82 + innerBand * 0.28) * (pointerActive ? 26 : 12);
+      const x = baseX + dirX * displacement - dirY * swirl;
+      const y = baseY + dirY * displacement + dirX * swirl;
+      const tangentAngle = angle + Math.PI / 2 + band * 0.22;
       const length = particle.length + Math.sin(t * 1.15 + particle.phase) * config.ringWidth * 2.8;
       const thickness = particle.thickness + Math.cos(t * 1.1 + particle.phase) * config.ringWidth2 * 0.8;
-      const alpha = particle.alpha * (0.9 + Math.sin(t * 0.95 + particle.phase) * 0.1);
+      const alpha = particle.alpha * (0.88 + Math.sin(t * 0.95 + particle.phase) * 0.12) * (1 + band * 0.45);
       const color = samplePalette(particle.colorOffset + t * 0.015);
 
       drawDash(x, y, length, thickness, tangentAngle, color, alpha);
@@ -197,13 +223,14 @@ const setupAntigravityBackground = () => {
   };
 
   const handlePointerMove = (event) => {
-    pointerTarget.x = event.clientX / window.innerWidth - 0.5;
-    pointerTarget.y = event.clientY / window.innerHeight - 0.5;
+    const rect = backgroundCanvas.getBoundingClientRect();
+    pointerActive = true;
+    pointerTarget.x = clamp((event.clientX - rect.left) / rect.width, 0, 1);
+    pointerTarget.y = clamp((event.clientY - rect.top) / rect.height, 0, 1);
   };
 
   const handlePointerLeave = () => {
-    pointerTarget.x = 0;
-    pointerTarget.y = 0;
+    pointerActive = false;
   };
 
   const handleMotionChange = () => {
